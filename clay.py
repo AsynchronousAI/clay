@@ -17,6 +17,7 @@ import json_parser
 import shutil
 from multiprocessing import Process
 from subprocess import call
+from time import sleep
 # variables
 commands = []
 runInstall = True
@@ -63,6 +64,10 @@ def runCommand(command):
 # build
 def buildJS():
     pass
+def buildLua():
+    pass
+def buildPython():
+    pass
 # languages
 def runPython(scriptPath):
     if utilExists("python") == False:
@@ -95,7 +100,7 @@ def runPython(scriptPath):
     script = "from clayForPython import *\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    call(["python", scriptPath])
+    runCommand("python "+scriptPath)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 
@@ -360,38 +365,6 @@ def runCS(scriptPath):
     runCommand("mono "+scriptPath.replace(".cs", ""))
     with open(scriptPath, 'w') as f:
         f.write(orig)
-def runHTML(scriptPath):
-    if utilExists("firefox") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install firefox")
-            else:
-                print("Firefox is required to run this script. You can install it from https://firefox.com, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install firefox")
-            else:
-                print("Firefox is required to run this script. You can install it from https://firefox.com, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install firefox")
-            else:
-                print("Firefox is required to run this script. You can install it from https://firefox.com, We tried to install it for you, but you need brew.")
-        else:
-            print("Firefox is required to run this script. You can install it from https://firefox.com, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    script = "require('clayForHTML')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("firefox "+scriptPath)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
 def runRust(scriptPath):
     if utilExists("rustc") == False:
         # Check operating system
@@ -426,68 +399,16 @@ def runRust(scriptPath):
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runJS(scriptPath):
-    if utilExists("node") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install nodejs")
-            else:
-                print("Node is required to run this script. You can install it from https://nodejs.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install nodejs")
-            else:
-                print("Node is required to run this script. You can install it from https://nodejs.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install nodejs")
-            else:
-                print("Node is required to run this script. You can install it from https://nodejs.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Node is required to run this script. You can install it from https://nodejs.org, We tried to install it for you, but we couldn't detect your operating system.")
+    if utilExists("clayJS") == False:
+        print("ClayJS is not built yet, we are building it now...")
+        buildJS()
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
     script = "require('clayForJS')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("node "+scriptPath)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runTS(scriptPath):
-    if utilExists("tsc") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install typescript")
-            else:
-                print("TypeScript is required to run this script. You can install it from https://typescriptlang.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install typescript")
-            else:
-                print("TypeScript is required to run this script. You can install it from https://typescriptlang.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install typescript")
-            else:
-                print("TypeScript is required to run this script. You can install it from https://typescriptlang.org, We tried to install it for you, but you need brew.")
-        else:
-            print("TypeScript is required to run this script. You can install it from https://typescriptlang.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    script = "require('clayForTS')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("tsc "+scriptPath)
-    runCommand("node "+scriptPath.replace(".ts", ".js"))
+    runCommand("bun run "+scriptPath)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runDart(scriptPath):
@@ -808,8 +729,12 @@ def run():
         with open("Runlogs.json", "w") as file:
             json.dump(data, file)
 
+        global threadrunning 
         threadrunning = True
-    
+        global threadsrunning 
+        threadsrunning = 0
+
+
         def onChange(data):
                 # convert data to a table
             if data:
@@ -825,14 +750,19 @@ def run():
             
         def routine():
             last = ""
+            threadsrunning = 0
             while threadrunning == True:
                 with open("Runlogs.json", "r") as file:
                    data = (file.read())
                 if data == last:
                     pass
                 else:
+                    threadsrunning += 1
                     thread = threading.Thread(target=onChange, args=(data,))
                     thread.start()
+                    # wait for thread to finish
+                    thread.join()
+                    threadsrunning -= 1
                 last = data
 
         thread = threading.Thread(target=routine)
@@ -842,9 +772,13 @@ def run():
         else:
             print("Script not found. Try running "+blue("clay new", ['bold'])+" again to reconfigure.")
 
-        
-        os.remove("Runlogs.json")
+        if threadsrunning > 0:
+            while threadsrunning > 0:
+                pass
         threadrunning = False
+        threadsrunning = 0
+        sleep(0.5)
+        os.remove("Runlogs.json")
     else:
         print("No project found, try running "+blue("clay new", ['bold'])+" first.")
     main()
@@ -856,35 +790,14 @@ def install():
     if exists("package.json") == True:
         technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
         if technique == "npm":
-            if utilExists("npm") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("npm is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install npm")
-                    else:
-                        print("npm is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("npm is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install npm")
-                    else:
-                        print("npm is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("npm is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install npm")
-                    else:
-                        print("npm is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                
+            if utilExists("clayJS") == False:
+                print("ClayJS is not installed. Installing...")
+                buildJS()
 
-            
             name = input("Package name: ")
             add(name, "npm")
             print("Installing "+name+"...")
-            os.system("npm install "+name+" --prefix dependencies")
+            os.system("clayJS install "+name+" --prefix dependencies")
 
             os.remove("dependencies/package.json")
             os.remove("dependencies/package-lock.json")
@@ -1152,7 +1065,8 @@ def clear():
 def pref():
     pass
 
-
+def todo():
+    print("Add package support, Add python (recieve) support, add built in builder.")
 # Main function
 def main():
     command = input("clay> ")

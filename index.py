@@ -1,9 +1,1 @@
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-from clayForPython import *
-reply(recieve())
+send("index.lua", "dta")

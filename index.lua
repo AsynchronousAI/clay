@@ -1,1 +1,2 @@
-print(send("index.py", "data"))
+print(recieve("data"))
+reply("epic")
