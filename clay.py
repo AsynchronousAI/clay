@@ -59,7 +59,10 @@ def utilExists(name):
 def runCommand(command):
     print("Running command: "+command)
     os.system(command)
-    
+
+# build
+def buildJS():
+    pass
 # languages
 def runPython(scriptPath):
     if utilExists("python") == False:
