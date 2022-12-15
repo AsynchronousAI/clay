@@ -11,7 +11,7 @@ def reply(value):
     with open("Runlogs.json", "w", encoding='utf-8') as file:
         if my_str is not None:
             file.write(json.dump(data, file))
-            file.close()
+            file.close() #
 def send(name):
     # Read Runlogs.json
     data = []
@@ -23,7 +23,7 @@ def send(name):
 
     # Write data to Runlogs.json
     with open("Runlogs.json", "w", encoding='utf-8') as file:
-            
+
         json.dump(data, file)
 def recieve():
     # return the last value in Runlogs.json and remove it
