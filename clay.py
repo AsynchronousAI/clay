@@ -34,7 +34,7 @@ def execute(script):
     elif script.endswith(".js"):
         runJS(script)
     elif script.endswith(".ts"):
-        runTS(script)
+        runJS(script)
     elif script.endswith(".c"):
         runC(script)
     elif script.endswith(".cpp"):
