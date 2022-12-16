@@ -117,7 +117,7 @@ This function will print "Logged in" when the bot logs in.
 ```lua
 function client.on_message(self, message)
    if message.content == "ping" then
-      message.channel.send("pong.)
+      message.channel.send("pong")
    end
 end
 ```
