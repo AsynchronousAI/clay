@@ -1,2 +1,1 @@
-print(recieve("data"))
-reply("epic")
+print("Hello world")

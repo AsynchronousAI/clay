@@ -62,11 +62,33 @@ def runCommand(command):
     os.system(command)
 
 # build
+def buildAll():
+    buildPython()
+    buildLua()
+    #buildRuby()
+    #buildSwift()
+    buildJS()
+    #buildC()
+    #buildCpp()
+    #buildCS()
+    #buildJava()
+    #buildGo()
+    buildRust()
+    #buildKotlin()
+    #buildPHP()
+    #buildDart()
+    pass
+def buildSelf():
+    # compile clay.py 
+    pass
+
 def buildJS():
     pass
 def buildLua():
     pass
 def buildPython():
+    pass
+def buildRust():
     pass
 # languages
 def runPython(scriptPath):
