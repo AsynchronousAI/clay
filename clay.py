@@ -79,10 +79,36 @@ def buildAll():
     #buildDart()
     pass
 def buildSelf():
-    # compile clay.py 
+    # check if pypy exists, if not download it
+    if utilExists("pypy") == False:
+        if sys.platform == "win32":
+            # Check if they have choclatey installed
+            if utilExists("choco") == True:
+                runCommand("choco install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need choco.")
+        elif sys.platform == "linux":
+            # Check if they have apt installed
+            if utilExists("apt") == True:
+                runCommand("sudo apt install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need apt.")
+        elif sys.platform == "darwin":
+            # Check if they have brew installed
+            if utilExists("brew") == True:
+                runCommand("brew install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need brew.")
+        else:
+            print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but we couldn't detect your operating system.") 
+    # use pypy to compile clay.py
+    runCommand("pypy clay.py")
+    
     pass
 
 def buildJS():
+    # Q: How to build Bun.JS with terminal?
+    
     pass
 def buildLua():
     pass
@@ -1090,7 +1116,12 @@ def todo():
     print("Add package support, Add python (recieve) support, add built in builder.")
 
 # Main function
+terminall = False
+def main():
+    if terminall == True:
+        terminal()
 def terminal():
+    terminall = True
     command = input("clay> ")
     if command == "new":
         new()
@@ -1127,4 +1158,5 @@ def terminal():
 
 if __name__ == "__main__":
     print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
+    terminall = True
     terminal()
