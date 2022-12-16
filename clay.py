@@ -103,7 +103,6 @@ def runPython(scriptPath):
     runCommand("python "+scriptPath)
     with open(scriptPath, 'w') as f:
         f.write(orig)
-
 def runLua(scriptPath):
     if utilExists("lua") == False:
         # Check operating system
@@ -1067,8 +1066,9 @@ def pref():
 
 def todo():
     print("Add package support, Add python (recieve) support, add built in builder.")
+
 # Main function
-def main():
+def terminal():
     command = input("clay> ")
     if command == "new":
         new()
@@ -1105,4 +1105,4 @@ def main():
 
 if __name__ == "__main__":
     print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
-    main()
+    terminal()
