@@ -166,7 +166,7 @@ function send(path, sent, requireResponse)
     -- Get return value
     repeat
       --print("waiting for response")
-    until (#data["return"] == #data.requests) or (os.time() - timeSince > 1)
+    until (#data["return"] == #data.requests) or (os.time() - timeSince > 5)
     local file = io.open("Runlogs.json", "r")
     local returnJson = file:read("*all")
     file: close()

@@ -1,1 +1,1 @@
-print(send("index.py", "data"))
+print("Hello world")
