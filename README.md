@@ -1,6 +1,23 @@
 # Clay
 ## Supported languages: 
-Python, Lua, Ruby, Swift, JavaScript, TypeScript, C, C++, C#, Java, Go, Rust, Kotlin, PHP, and Dart.
+| File | Language                       |
+| ----- | ----------------------------- |
+| .js   | JSX + JavaScript              |
+| .jsx  | JSX + JavaScript              |
+| .ts   | TypeScript + JavaScript       |
+| .tsx  | TypeScript + JSX + JavaScript | 
+| .mjs  | JavaScript                    |
+| .cjs  | JavaScript                    |
+| .mts  | TypeScript                    |
+| .cts  | TypeScript                    |
+| .toml | TOML                          |
+| .css  | CSS                           |
+| .env  | Env                           |
+| .\*   | file                          |
+| .lua  | Lua                           |
+| .py   | Python                        |
+| .rs   | Rust                          |
+
 ## Supported platforms: 
 Windows, Linux, and macOS (darwin).
 ## Supported package managerds: 
@@ -131,3 +148,4 @@ client.run('token')
 Add the following and test the script.
 
 You should get a discord bot that when you write "ping" it will reply "pong".
+
