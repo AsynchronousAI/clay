@@ -105,6 +105,52 @@ def buildLua():
             runCommand("make install")
             runCommand("make local")            
 def buildPython():
+    pass
+def buildRust():
+    pass
+# languages
+def runPython(scriptPath):
+    if utilExists("python") == False:
+        if sys.platform == "win32":
+            # Check if they have choclatey installed
+            if utilExists("choco") == True:
+                runCommand("choco install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need choco.")
+        elif sys.platform == "linux":
+            # Check if they have apt installed
+            if utilExists("apt") == True:
+                runCommand("sudo apt install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need apt.")
+        elif sys.platform == "darwin":
+            # Check if they have brew installed
+            if utilExists("brew") == True:
+                runCommand("brew install pypy")
+            else:
+                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need brew.")
+        else:
+            print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but we couldn't detect your operating system.") 
+    # use pypy to compile clay.py
+    runCommand("pypy clay.py")
+    
+    pass
+
+def buildJS():
+    pass
+def buildLua():
+    if utilExists("lua") == False:
+        print("Lua (clay edition) is not installed. Installing...")
+        # build ./clayLua
+        if utilExists("make") == False:
+            print("Make is required to install Lua (clay edition).")
+        else:
+            # cd ./clayLua
+            os.chdir("./clayLua")
+            runCommand("make all")
+            runCommand("make install")
+            runCommand("make local")            
+def buildPython():
     if utilExists("python") == False:
         print("Python (clay edition) is not installed. Installing...")
         # build ./clayPython
@@ -1029,7 +1075,12 @@ def todo():
     print("Add package support, Add python (recieve) support, add built in builder.")
 
 # Main function
+terminall = False
+def main():
+    if terminall == True:
+        terminal()
 def terminal():
+    terminall = True
     command = input("clay> ")
     if command == "new":
         new()
@@ -1066,4 +1117,5 @@ def terminal():
 
 if __name__ == "__main__":
     print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
+    terminall = True
     terminal()
