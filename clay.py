@@ -8,7 +8,6 @@
 import os
 os.system("pip install simple_colors")
 os.system("pip install simplejson")
-os.system("pip install multiprocessing")
 os.system("pip install simplejson")
 os.system("pip install json_parser")
 import json
@@ -27,6 +26,7 @@ from time import sleep
 # variables
 commands = []
 runInstall = True
+path = os.getcwd()
 # run functions
 def execute(script):
     if script.endswith(".py"):
@@ -109,73 +109,61 @@ def buildLua():
             if sys.platform == "win32":
                 # move files to windows equivelent of bin
                 os.chdir("./install/bin")
-                shutil.move("lua", "C:/Windows/System32")
-                shutil.move("luac", "C:/Windows/System32")
+                shutil.move("lua.exe", "C:/Windows/System32")
+                shutil.move("luac.exe", "C:/Windows/System32")
                 return
             os.chdir("./install/bin")
             shutil.move("lua", "/usr/local/bin")
             shutil.move("luac", "/usr/local/bin")
 
-            print("Successfully installed Lua (clay edition).")
-            
-
+            print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
+            return
+        print(red("\nFailed to install Lua (clay edition).\n\n\n"))
 def buildPython():
     pass
-def buildRust():
-    pass
-# languages
-def runPython(scriptPath):
-    if utilExists("python") == False:
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install pypy")
-            else:
-                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install pypy")
-            else:
-                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install pypy")
-            else:
-                print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but you need brew.")
-        else:
-            print("PyPy is required to build this script. You can install it from https://pypy.org, We tried to install it for you, but we couldn't detect your operating system.") 
-    # use pypy to compile clay.py
-    runCommand("pypy clay.py")
-    
-    pass
-
-def buildJS():
-    pass
-def buildLua():
-    if utilExists("lua") == False:
-        print("Lua (clay edition) is not installed. Installing...")
-        # build ./clayLua
-        if utilExists("make") == False:
-            print("Make is required to install Lua (clay edition).")
-        else:
-            # cd ./clayLua
-            os.chdir("./clayLua")
-            runCommand("make all")
-            runCommand("make install")
-            runCommand("make local")            
-def buildPython():
-    if utilExists("python") == False:
-        print("Python (clay edition) is not installed. Installing...")
-        # build ./clayPython
 def buildRust():
     if utilExists("rustc") == False:
-        print("Rust (clay edition) is not installed. Installing...")
+        print("Rust is not installed. Installing...")
+        
         # build ./clayRust
+        if utilExists("make") == False:
+            print("Make is required to install Rust.")
+        else:
+            # cd ./clayRust
+            os.chdir("./clayRust")
+            os.system("./configure")
+            runCommand("make")          
+            
+            # find a directory in clayRust/build/ that has a file that starts with stage
+            for root, dirs, files in os.walk("./build"):
+                for file in files:
+                    if file.startswith("stage") and os.path.exists("./build/"+file+"/bin"):
+                        # move items from clayRust/build/stage1/bin to /usr/local/bin
+                        # make sure file has a bin folder
+                        if sys.platform == "win32":
+                            # move files to windows equivelent of bin
+                            os.chdir("./build/"+file+"/bin")
+                            shutil.move("rustc.exe", "C:/Windows/System32")
+                            shutil.move("rustdoc.exe", "C:/Windows/System32")
+                            shutil.move("rust-gdb.exe", "C:/Windows/System32")
+                            shutil.move("rust-lldb.exe", "C:/Windows/System32")
+                            shutil.move("rustup.exe", "C:/Windows/System32")
+                            return
+                        os.chdir("./build/"+file+"/bin")
+                        shutil.move("rustc", "/usr/local/bin")
+                        shutil.move("rustdoc", "/usr/local/bin")
+                        shutil.move("rust-gdb", "/usr/local/bin")
+                        shutil.move("rust-lldb", "/usr/local/bin")
+                        shutil.move("rustup", "/usr/local/bin")
+
+                        print(magenta("\nSuccessfully installed Rust (clay edition).\n\n\n"))
+                        return
+
+            print(red("\nFailed to install Rust (clay edition).\n\n\n"))
 # languages
 def runPython(scriptPath):
     buildPython()
+    os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
@@ -190,6 +178,7 @@ def runPython(scriptPath):
         f.write(orig)
 def runLua(scriptPath):
     buildLua()
+    os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
@@ -429,36 +418,21 @@ def runCS(scriptPath):
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runRust(scriptPath):
-    if utilExists("rustc") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install rust")
-            else:
-                print("Rust is required to run this script. You can install it from https://rust-lang.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install rust")
-            else:
-                print("Rust is required to run this script. You can install it from https://rust-lang.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install rust")
-            else:
-                print("Rust is required to run this script. You can install it from https://rust-lang.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Rust is required to run this script. You can install it from https://rust-lang.org, We tried to install it for you, but we couldn't detect your operating system.")
+    buildRust()
+    os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForRust')\n"+script
+    script = "\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("rustc "+scriptPath)
-    runCommand("./a.out")
+    runCommand("rustc "+scriptPath) 
+    # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
+    if sys.platform == "win32":
+        runCommand("./"+scriptPath.replace(".rs", ".exe"))
+    else:
+        runCommand("./"+scriptPath.replace(".rs", ""))
+    os.chdir(path)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runJS(scriptPath):
@@ -773,6 +747,11 @@ def run():
             last = ""
             threadsrunning = 0
             while threadrunning == True:
+                # check if Runlogs.json exists
+                if exists("Runlogs.json") == False:
+                    # wait until it exists
+                    while exists("Runlogs.json") == False:
+                        pass
                 with open("Runlogs.json", "r") as file:
                    data = (file.read())
                 if data == last:
