@@ -6,6 +6,11 @@
 
 # libraries
 import os
+os.system("pip install simple_colors")
+os.system("pip install simplejson")
+os.system("pip install multiprocessing")
+os.system("pip install simplejson")
+os.system("pip install json_parser")
 import json
 from os.path import exists
 from simple_colors import *
@@ -18,6 +23,7 @@ import shutil
 from multiprocessing import Process
 from subprocess import call
 from time import sleep
+
 # variables
 commands = []
 runInstall = True
@@ -83,36 +89,32 @@ def buildSelf():
     pass
 
 def buildJS():
-    pass
+    if utilExists("bun") == False:
+        print("Bun.js (clay edition) is not installed. Installing...")
+        # build ./clayJS
 def buildLua():
-    pass
+    if utilExists("lua") == False:
+        print("Lua (clay edition) is not installed. Installing...")
+        # build ./clayLua
+        if utilExists("make") == False:
+            print("Make is required to install Lua (clay edition).")
+        else:
+            # cd ./clayLua
+            os.chdir("./clayLua")
+            runCommand("make all")
+            runCommand("make install")
+            runCommand("make local")            
 def buildPython():
-    pass
+    if utilExists("python") == False:
+        print("Python (clay edition) is not installed. Installing...")
+        # build ./clayPython
 def buildRust():
-    pass
+    if utilExists("rustc") == False:
+        print("Rust (clay edition) is not installed. Installing...")
+        # build ./clayRust
 # languages
 def runPython(scriptPath):
-    if utilExists("python") == False:
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install lua")
-            else:
-                print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install python3")
-            else:
-                print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install python3")
-            else:
-                print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but we couldn't detect your operating system.")
+    buildPython()
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
@@ -126,28 +128,7 @@ def runPython(scriptPath):
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runLua(scriptPath):
-    if utilExists("lua") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install lua")
-            else:
-                print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install lua")
-            else:
-                print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install lua")
-            else:
-                print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but we couldn't detect your operating system.")
+    buildLua()
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
@@ -615,28 +596,7 @@ def shell():
     print("Click "+blue("CTRL+C", ['bold'])+" to exit the shell. Or you can terminate the terminal.")
     print("The shell lets you use the original version of the language, Not with the clay additions.")
     if lang == "python":
-        if utilExists("python") == False:
-            # Check operating system
-            if sys.platform == "win32":
-                # Check if they have choclatey installed
-                if utilExists("choco") == True:
-                    os.system("choco install python")
-                else:
-                    print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need choco.")
-            elif sys.platform == "linux":
-                # Check if they have apt installed
-                if utilExists("apt") == True:
-                    os.system("sudo apt install python")
-                else:
-                    print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need apt.")
-            elif sys.platform == "darwin":
-                # Check if they have brew installed
-                if utilExists("brew") == True:
-                    os.system("brew install python")
-                else:
-                    print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but you need brew.")
-            else:
-                print("Python is required to run this script. You can install it from https://python.org, We tried to install it for you, but we couldn't detect your operating system.")
+        buildPython()
         os.system("python")
     elif lang == "php":
         if utilExists("php") == False:
@@ -711,29 +671,8 @@ def shell():
                 print("Perl is required to run this script. You can install it from https://perl.org, We tried to install it for you, but we couldn't detect your operating system.")
         os.system("perl -del")
     elif lang == "lua":
-        if utilExists("lua") == False:
-            # Check operating system
-            if sys.platform == "win32":
-                # Check if they have choclatey installed
-                if utilExists("choco") == True:
-                    os.system("choco install lua")
-                else:
-                    print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need choco.")
-            elif sys.platform == "linux":
-                # Check if they have apt installed
-                if utilExists("apt") == True:
-                    os.system("sudo apt install lua")
-                else:
-                    print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need apt.")
-            elif sys.platform == "darwin":
-                # Check if they have brew installed
-                if utilExists("brew") == True:
-                    os.system("brew install lua")
-                else:
-                    print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but you need brew.")
-            else:
-                print("Lua is required to run this script. You can install it from https://lua.org, We tried to install it for you, but we couldn't detect your operating system.")
-        os.system("lua")
+       buildLua()
+       os.system("lua")
     else:
         print("Unknown language.")
     
