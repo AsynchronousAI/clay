@@ -104,6 +104,21 @@ def buildLua():
             runCommand("make all")
             runCommand("make install")
             runCommand("make local")            
+
+            # move items from clayLua/install/bin to /usr/local/bin
+            if sys.platform == "win32":
+                # move files to windows equivelent of bin
+                os.chdir("./install/bin")
+                shutil.move("lua", "C:/Windows/System32")
+                shutil.move("luac", "C:/Windows/System32")
+                return
+            os.chdir("./install/bin")
+            shutil.move("lua", "/usr/local/bin")
+            shutil.move("luac", "/usr/local/bin")
+
+            print("Successfully installed Lua (clay edition).")
+            
+
 def buildPython():
     pass
 def buildRust():
