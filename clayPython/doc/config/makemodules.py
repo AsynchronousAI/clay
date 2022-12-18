@@ -13,7 +13,7 @@ if __name__ == '__main__':
         f = thisdir.join(basename)
         #if f.check() and f.size():
         #    continue
-        print "making docs for", p
+        print ("making docs for", p)
         text = ["Use the '%s' module. " % (p, )]
         if p in pypyoption.essential_modules:
             text.append("This module is essential, included by default and should not be removed.")

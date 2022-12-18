@@ -218,7 +218,7 @@ class TestCompiler(BaseTestCompiler):
                 self.got = x
         checker = Checker()
         for testcase in testcases:
-            exec "checker" + testcase
+            exec( "checker" + testcase)
             yield self.st, decl + "a" + testcase, "got", checker.got
             yield self.st, decl + "a" + testcase + ' = 5', "set", checker.got
             yield self.st, decl + "del a" + testcase, "deleted", checker.got
@@ -615,7 +615,7 @@ class TestCompiler(BaseTestCompiler):
         """)
         decl = str(decl) + '\n'
         g = {}
-        exec decl in g
+        exec (decl in g)
         expected = g['_safe_repr']([5], {}, 3, 0)
         yield self.st, decl + 'x=_safe_repr([5], {}, 3, 0)', 'x', expected
 
@@ -990,7 +990,7 @@ class AppTestCompiler:
     def test_docstring_not_loaded(self):
         import StringIO, dis, sys
         ns = {}
-        exec "def f():\n    'hi'" in ns
+        exec ("def f():\n    'hi'" in ns)
         f = ns["f"]
         save = sys.stdout
         sys.stdout = output = StringIO.StringIO()
@@ -1001,7 +1001,7 @@ class AppTestCompiler:
         assert "0 ('hi')" not in output.getvalue()
 
     def test_print_to(self):
-        exec """if 1:
+        exec ("""if 1:
         from StringIO import StringIO
         s = StringIO()
         print >> s, "hi", "lovely!"
@@ -1009,7 +1009,7 @@ class AppTestCompiler:
         s = StringIO()
         print >> s, "hi", "lovely!",
         assert s.getvalue() == "hi lovely!"
-        """ in {}
+        """ in {})
 
     def test_assert_with_tuple_arg(self):
         try:
@@ -1035,7 +1035,7 @@ class AppTestCompiler:
     def test_unicode_in_source(self):
         import sys
         d = {}
-        exec '# -*- coding: utf-8 -*-\n\nu = u"\xf0\x9f\x92\x8b"' in d
+        exec ('# -*- coding: utf-8 -*-\n\nu = u"\xf0\x9f\x92\x8b"' in d)
         if sys.maxunicode > 65535:
             expected_length = 1
         else:
@@ -1049,7 +1049,7 @@ class TestOptimizations:
         instrs = []
         for block in blocks:
             instrs.extend(block.instructions)
-        print instrs
+        print (instrs)
         counts = {}
         for instr in instrs:
             counts[instr.opcode] = counts.get(instr.opcode, 0) + 1

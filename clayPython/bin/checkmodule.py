@@ -39,7 +39,7 @@ def main(argv):
         pdb.post_mortem(sys.exc_info()[2])
         return 1
     else:
-        print 'Passed.'
+        print ('Passed.')
         return 0
 
 if __name__ == '__main__':

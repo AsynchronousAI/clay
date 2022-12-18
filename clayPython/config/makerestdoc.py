@@ -145,7 +145,7 @@ def _get_section_header(cmdline, fullpath, subdescr):
     # XXX:  pypy specific hack
     txtfile = configdocdir.join(fullpath + ".txt")
     if not txtfile.check():
-        print txtfile, "not found"
+        print (txtfile, "not found")
         return ""
     content = txtfile.read()
     if ".. internal" in content:

@@ -5,7 +5,7 @@ class TestStdlib:
 
     def check_file_compile(self, filepath):
         space = self.space
-        print 'Compiling:', filepath
+        print ('Compiling:', filepath)
         source = filepath.read()
         compile_with_astcompiler(source, mode='exec', space=space)
 
