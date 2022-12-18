@@ -116,7 +116,7 @@ def buildLua():
                     print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
                     return True
         print(red("\n\nFailed to install Lua (clay edition).\n Exit status: "+str(status)+"\n\n", ["bold"]))
-        print(yellow("help: this may be because you are not using a POSIX system."))
+        print(yellow("help: this may be because your platform is not supported. get more help at https://AsynchronousAI.github.io/clay/forum\n\n"))
         os.chdir(path)
         return False
 def buildPython():
