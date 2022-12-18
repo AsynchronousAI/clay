@@ -18,7 +18,7 @@ import shutil
 from multiprocessing import Process
 from subprocess import call
 from time import sleep
-
+import platform
 # variables
 commands = []
 runInstall = True
@@ -62,10 +62,14 @@ def execute(script):
         return
 def utilExists(name):
     return find_executable(name) is not None
-def runCommand(command):
-    print("Running command: "+command)
-    os.system(command)
+def runCommand(command, isRun = False):
+    #print("Running command: "+command)
+    status = os.system(command)
+    if isRun:
+        if status != 0:
+            print(red("\n\nFailed to run script. Error code: "+str(status)+"\n\n", ["bold"]))
 
+    return status
 # build
 def buildAll():
     buildPython()
@@ -92,7 +96,7 @@ def buildJS():
         print("Bun.js (clay edition) is not installed. Installing...")
         # build ./clayJS
 def buildLua():
-    if utilExists("lua") == False:
+    if utilExists("luajit") == False:
         print("Lua (clay edition) is not installed. Installing...")
         # build ./clayLua
         if utilExists("make") == False:
@@ -100,24 +104,21 @@ def buildLua():
         else:
             # cd ./clayLua
             os.chdir("./clayLua")
-            runCommand("make all")
-            runCommand("make install")
-            runCommand("make local")            
+            if sys.platform == "darwin":
+                osx = (platform.uname().release).rsplit('.', 1)[0]
+                status = runCommand("MACOSX_DEPLOYMENT_TARGET="+osx+" make && sudo make install")   
+            else:
+                status = runCommand("make && sudo make install")
 
-            # move items from clayLua/install/bin to /usr/local/bin
-            if sys.platform == "win32":
-                # move files to windows equivelent of bin
-                os.chdir("./install/bin")
-                shutil.move("lua.exe", "C:/Windows/System32")
-                shutil.move("luac.exe", "C:/Windows/System32")
-                return
-            os.chdir("./install/bin")
-            shutil.move("lua", "/usr/local/bin")
-            shutil.move("luac", "/usr/local/bin")
-
-            print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
-            return
-        print(red("\nFailed to install Lua (clay edition).\n\n\n"))
+            if status == 0:      
+                status = runCommand("sudo make install")
+                if status == 0:
+                    print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
+                    return True
+        print(red("\n\nFailed to install Lua (clay edition).\n Exit status: "+str(status)+"\n\n", ["bold"]))
+        print(yellow("help: this may be because you are not using a POSIX system."))
+        os.chdir(path)
+        return False
 def buildPython():
     pass
 def buildRust():
@@ -125,15 +126,33 @@ def buildRust():
     if utilExists("rustc") == False:
         if sys.platform == "darwin":
             print("Rust is not installed. Installing...")
-            runCommand("brew install rust")
-
+            if utilExists("brew") == False:
+                print("Brew is not installed. Installing...")
+                status = runCommand("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\"")
+                if status != 0:
+                    print(red("\n\nFailed to install brew. Error code: "+str(status)+"\n\n", ["bold"]))
+                    return False
+            status = runCommand("brew install rust")
+            if status != 0:
+                print(red("\n\nFailed to install rust. Error code: "+str(status)+"\n\n", ["bold"]))
+                return False
         if sys.platform == "linux":
             print("Rust is not installed. Installing...")
+            if utilExists("apt") == False:
+                print(red("\n\nFailed to install rust. apt is not installed", ["bold"]))
+                return False
             runCommand("sudo apt install rustc")
 
         if sys.platform == "win32":
             print("Rust is not installed. Installing...")
+            if utilExists("choco") == False:
+                print("Chocolatey is not installed. Installing...")
+                status = runCommand("powershell.exe -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\"")
+                if status != 0:
+                    print(red("\n\nFailed to install chocolatey. Error code: "+str(status)+"\n\n", ["bold"]))
+                    return False
             runCommand("choco install rust")
+        return True
     '''
     if utilExists("rustc") == False:
         print("Rust is not installed. Installing...")
@@ -176,7 +195,10 @@ def buildRust():
             '''
 # languages
 def runPython(scriptPath):
-    buildPython()
+    x = buildPython()
+    if x == False:
+        return
+
     os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
@@ -187,11 +209,13 @@ def runPython(scriptPath):
     script = "from clayForPython import *\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("python "+scriptPath)
+    runCommand("python "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runLua(scriptPath):
-    buildLua()
+    x = buildLua()
+    if x == False:
+        return
     os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
@@ -199,7 +223,7 @@ def runLua(scriptPath):
     script = "require('clayForLua')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("lua "+scriptPath)
+    runCommand("luajit "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 
@@ -232,7 +256,7 @@ def runRuby(scriptPath):
     script = "require('clayForRuby')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("ruby "+scriptPath)
+    runCommand("ruby "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runSwift(scriptPath):
@@ -264,7 +288,7 @@ def runSwift(scriptPath):
     script = "require('clayForSwift')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("swift "+scriptPath)
+    runCommand("swift "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runC(scriptPath):
@@ -296,7 +320,7 @@ def runC(scriptPath):
     script = "#include <clayForC.h>\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("gcc "+scriptPath)
+    runCommand("gcc "+scriptPath, True)
     runCommand("./a.out")
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -329,7 +353,7 @@ def runKotlin(scriptPath):
     script = "require('clayForKotlin')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("kotlinc "+scriptPath)
+    runCommand("kotlinc "+scriptPath, True)
     runCommand("kotlin "+scriptPath.replace(".kt", ""))
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -362,7 +386,7 @@ def runJava(scriptPath):
     script = "require('clayForJava')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("javac "+scriptPath)
+    runCommand("javac "+scriptPath, True)
     runCommand("java "+scriptPath.replace(".java", ""))
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -395,7 +419,7 @@ def runCpp(scriptPath):
     script = "require('clayForCpp')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("g++ "+scriptPath)
+    runCommand("g++ "+scriptPath, True)
     runCommand("./a.out")
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -428,12 +452,14 @@ def runCS(scriptPath):
     script = "require('clayForCsharp')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("csc "+scriptPath)
-    runCommand("mono "+scriptPath.replace(".cs", ""))
+    runCommand("csc "+scriptPath, True)
+    runCommand("mono "+scriptPath.replace(".cs", ""), True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runRust(scriptPath):
-    buildRust()
+    x = buildRust()
+    if x == False:
+        return
     os.chdir(path)
     with open(scriptPath, 'r') as f:
           script = f.read()
@@ -442,26 +468,26 @@ def runRust(scriptPath):
     with open(scriptPath, 'w') as f:
         f.write(script)
     # if a file is found ith the name scriptPath.replace(".rs", "")
-    runCommand("rustc "+scriptPath) 
+    runCommand("rustc "+scriptPath, True) 
     # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
     if sys.platform == "win32":
-        runCommand("./"+scriptPath.replace(".rs", ".exe"))
+        runCommand("./"+scriptPath.replace(".rs", ".exe"), True)
     else:
-        runCommand("./"+scriptPath.replace(".rs", ""))
+        runCommand("./"+scriptPath.replace(".rs", ""), True)
     os.chdir(path)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runJS(scriptPath):
-    if utilExists("clayJS") == False:
-        print("ClayJS is not built yet, we are building it now...")
-        buildJS()
+    x = buildJS()
+    if x == False:
+        return
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
     script = "require('clayForJS')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("bun run "+scriptPath)
+    runCommand("bun run "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runDart(scriptPath):
@@ -493,7 +519,7 @@ def runDart(scriptPath):
     script = "require('clayForDart')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("dart "+scriptPath)
+    runCommand("dart "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runGo(scriptPath):
@@ -525,7 +551,7 @@ def runGo(scriptPath):
     script = "require('clayForGo')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("go run "+scriptPath)
+    runCommand("go run "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runPHP(scriptPath):
@@ -557,7 +583,7 @@ def runPHP(scriptPath):
     script = "require('clayForPHP')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("php "+scriptPath)
+    runCommand("php "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)    
 

@@ -35,7 +35,7 @@ python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, ko
 - apt (linux only)
 - choco (windows only)
 - brew (darwin/macOS only)
-
+- Visual Studio (Windows only)
 ## Install
 Head over to releases and download clay.
 ## Build
