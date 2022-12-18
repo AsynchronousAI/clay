@@ -1,8 +1,8 @@
-# Clay: A global runtime made for all languages and platforms, clay is not a language!
-# Supported languages: Python, Lua, Ruby, Swift, JavaScript, TypeScript, C, C++, C#, Java, Go, Rust, Kotlin, PHP, and Dart.
-# Supported platforms: Windows, Linux, and macOS.
-# Supported package managerds: pip, npm, and cargo, go, pip, luarocks, git, and gem.
-# Supported shell languages: python, lua, php, swift, perl
+# author: @AsynchronousAI
+# version: 0.0.1
+# license: MIT
+
+
 
 # libraries
 import os
@@ -1106,6 +1106,19 @@ def massBuild():
 # Main function
 terminall = False
 def main():
+    # check for apt if they are on linux, check for choco if they are on windows, check for brew if they are on darwin
+    if sys.platform == "win32":
+        if utilExists("choco") == False:
+            print("Chocolatey is not installed, and it is a requirement. Please install it manually.")
+            return
+    elif sys.platform == "darwin":
+        if utilExists("brew") == False:
+            print("Homebrew is not installed, and it is a requirement. Please install it manually.")
+            return
+    elif sys.platform == "linux":
+        if utilExists("apt") == False:
+            print("apt is not installed, and it is a requirement. Please install it manually.")
+            return
     if terminall == True:
         terminal()
 def terminal():
