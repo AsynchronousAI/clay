@@ -114,7 +114,8 @@ For the second option write "discord.py".
 The file will be added to package.json and when the project is ran it will install the dependency.
 ## Begin programming
 Open index.lua and write the following
-"local discord = request("discord.py")"
+```lua
+local discord = request("discord.py")```
 The script will import discord.py as discord. 
 
 Now lets create the client.
