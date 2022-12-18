@@ -31,6 +31,7 @@ python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, ko
 - [Xcode](https://developer.apple.com/xcode/) (macOS only) (version 1.0.0+)
 - [LLVM](https://github.com/llvm/llvm-project/releases)
 - [GCC](https://gcc.gnu.org/install/)
+- [Python 3.x](https://python.org)
 
 ## Install
 Head over to releases and download clay.
