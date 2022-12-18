@@ -115,7 +115,8 @@ The file will be added to package.json and when the project is ran it will insta
 ## Begin programming
 Open index.lua and write the following
 ```lua
-local discord = request("discord.py")```
+local discord = request("discord.py") 
+```
 The script will import discord.py as discord. 
 
 Now lets create the client.
