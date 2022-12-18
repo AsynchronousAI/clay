@@ -28,10 +28,13 @@ python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, ko
 # Starting
 ## Requirements
 - [Makefile](https://www.gnu.org/software/make/)
-- [Xcode](https://developer.apple.com/xcode/) (macOS only) (version 1.0.0+)
-- [LLVM](https://github.com/llvm/llvm-project/releases)
+- [Xcode](https://developer.apple.com/xcode/) (macOS only) (clay version 1.0.0+)
+- [LLVM](https://github.com/llvm/llvm-project/releases) or [CMake](https://cmake.org)
 - [GCC](https://gcc.gnu.org/install/)
 - [Python 3.x](https://python.org)
+- apt (linux only)
+- choco (windows only)
+- brew (darwin/macOS only)
 
 ## Install
 Head over to releases and download clay.

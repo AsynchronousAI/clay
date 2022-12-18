@@ -6,10 +6,6 @@
 
 # libraries
 import os
-os.system("pip install simple_colors")
-os.system("pip install simplejson")
-os.system("pip install simplejson")
-os.system("pip install json_parser")
 import json
 from os.path import exists
 from simple_colors import *
@@ -29,6 +25,8 @@ runInstall = True
 path = os.getcwd()
 # run functions
 def execute(script):
+    print(magenta("Compiling "+script+"...\n\n"))
+
     if script.endswith(".py"):
         runPython(script)
     elif script.endswith(".lua"):
@@ -61,6 +59,7 @@ def execute(script):
         runDart(script)
     else:
         print("Unsupported file type. Supported file types are: Python, Lua, Ruby, Swift, JavaScript, TypeScript, C, C++, C#, Java, Go, Rust, Kotlin, PHP, and Dart.")
+        return
 def utilExists(name):
     return find_executable(name) is not None
 def runCommand(command):
@@ -122,6 +121,20 @@ def buildLua():
 def buildPython():
     pass
 def buildRust():
+    # At this time rust does not have a clay edition, so we will just install rust
+    if utilExists("rustc") == False:
+        if sys.platform == "darwin":
+            print("Rust is not installed. Installing...")
+            runCommand("brew install rust")
+
+        if sys.platform == "linux":
+            print("Rust is not installed. Installing...")
+            runCommand("sudo apt install rustc")
+
+        if sys.platform == "win32":
+            print("Rust is not installed. Installing...")
+            runCommand("choco install rust")
+    '''
     if utilExists("rustc") == False:
         print("Rust is not installed. Installing...")
         
@@ -133,7 +146,7 @@ def buildRust():
             os.chdir("./clayRust")
             os.system("./configure")
             runCommand("make")          
-            
+
             # find a directory in clayRust/build/ that has a file that starts with stage
             for root, dirs, files in os.walk("./build"):
                 for file in files:
@@ -160,6 +173,7 @@ def buildRust():
                         return
 
             print(red("\nFailed to install Rust (clay edition).\n\n\n"))
+            '''
 # languages
 def runPython(scriptPath):
     buildPython()
@@ -188,6 +202,7 @@ def runLua(scriptPath):
     runCommand("lua "+scriptPath)
     with open(scriptPath, 'w') as f:
         f.write(orig)
+
 def runRuby(scriptPath):
     if utilExists("ruby") == False:
         # Check operating system
@@ -426,6 +441,7 @@ def runRust(scriptPath):
     script = "\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
+    # if a file is found ith the name scriptPath.replace(".rs", "")
     runCommand("rustc "+scriptPath) 
     # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
     if sys.platform == "win32":
@@ -729,7 +745,13 @@ def run():
         global threadsrunning 
         threadsrunning = 0
 
-
+        # check if any files have the same name as eachother, if so then output an error
+        files = os.listdir()
+        for file in files:
+            if file:
+                if files.count(file) > 1:
+                    print(red("\nError: Multiple files with the same name.\n"))
+                    return
         def onChange(data):
                 # convert data to a table
             if data:
@@ -752,6 +774,8 @@ def run():
                     # wait until it exists
                     while exists("Runlogs.json") == False:
                         pass
+
+                os.chdir(path)
                 with open("Runlogs.json", "r") as file:
                    data = (file.read())
                 if data == last:
@@ -1068,6 +1092,17 @@ def pref():
 def todo():
     print("Add package support, Add python (recieve) support, add built in builder.")
 
+def massBuild():
+    print("The following command will install all of clays's dependencies, even the ones that are not needed for the current project. This may take multiple hours. \n\n Are you sure you want to continue? (y/n)")
+    answer = input("")
+    if answer == "y":
+        print("\nThis may take a while...\n")
+        buildAll()
+    elif answer == "n":
+        print("Aborting...")
+    else:
+        print("Invalid answer, aborting...")
+    main()
 # Main function
 terminall = False
 def main():
@@ -1082,6 +1117,8 @@ def terminal():
         add()
     if command == "remove":
         remove()
+    if command == "build":
+        massBuild()
     elif command == "run":
         run()
     elif command == "install":
