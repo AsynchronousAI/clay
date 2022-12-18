@@ -26,6 +26,12 @@ pip, npm, and cargo, go, pip, luarocks, git, and gem.
 python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, kotlin, php, and dart.
 
 # Starting
+## Requirements
+- [Makefile](https://www.gnu.org/software/make/)
+- [Xcode](https://developer.apple.com/xcode/) (macOS only) (version 1.0.0+)
+- [LLVM](https://github.com/llvm/llvm-project/releases)
+- [GCC](https://gcc.gnu.org/install/)
+
 ## Install
 Head over to releases and download clay.
 ## Build
