@@ -17,6 +17,15 @@
 | .lua  | Lua                           |
 | .py   | Python                        |
 | .rs   | Rust                          |
+| .bf   | Brainf*ck                     |
+| .moon | Moonscript                    |
+| .zig  | Zig                           |
+| .hs   | Haskell                       |
+| .go   | Go                            |
+
+
+
+
 
 ## Supported platforms: 
 Windows, Linux, and macOS (darwin).
