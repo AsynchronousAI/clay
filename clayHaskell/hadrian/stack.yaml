@@ -1,0 +1,14 @@
+resolver: lts-18.18
+
+packages:
+- '.'
+
+nix:
+   enable: false
+   packages:
+   - autoconf
+   - automake
+   - gcc
+   - git
+   - ncurses
+   - perl
