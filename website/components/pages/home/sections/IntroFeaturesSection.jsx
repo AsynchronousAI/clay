@@ -58,7 +58,7 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Sliders size={gap} />
             <Typography variant="intro" gutterTop>
-              Unified languages
+              Unified Languages
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
               Clay allows you to bind all your languages together. No more picking which language is best, Why not use them all at once?
@@ -69,7 +69,7 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Layout size={gap} />
             <Typography variant="intro" gutterTop>
-              Globalized packages
+              Globalized Packages
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
               All of your favorite packages no longer need to be used in a single language. Why limit yourself? Use any package in any language.
@@ -80,7 +80,7 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Tool size={gap} />
             <Typography variant="intro" gutterTop>
-              Utility belts
+              Utility Belts
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
               Install utility belts which gives you a set of tools to use in your code. Making a website? Install the web utilities and get all the tools you need.

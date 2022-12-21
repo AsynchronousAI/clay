@@ -32,7 +32,7 @@ const HeroSection = () => {
                     />
                   </ProductIconWrap>
                   <Typography variant="eyebrow-elevated" as="h1">
-                    clay for macOS
+                    clay
                   </Typography>
                   <Typography variant="headline-elevated">
                     A modern runtime for all of your code.
