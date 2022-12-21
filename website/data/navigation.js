@@ -1,13 +1,9 @@
 import links from '@/data/links';
 
 const navigation = [
-  {
-    href: '/',
-    label: 'clay',
-  },
    {
      href: '/whats-new',
-     label: 'What’s Included',
+     label: 'What’s New',
    },
    {
      href: '/resources',
