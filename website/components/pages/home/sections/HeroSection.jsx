@@ -23,15 +23,7 @@ const HeroSection = () => {
             <Row align="center" style={{ position: 'relative', zIndex: 1 }}>
               <Column width={{ md: 12, lg: 12 }}>
                 <Stack gap={2} align="center">
-                  <ProductIconWrap>
-                    <Image
-                      width={682}
-                      height={512}
-                      src="/product-icon.png"
-                      alt="clay product icon"
-                    />
-                  </ProductIconWrap>
-                  <Typography variant="eyebrow-elevated" as="h1">
+                  <Typography variant="eyebrow-super" as="h1">
                     clay
                   </Typography>
                   <Typography variant="headline-elevated">
