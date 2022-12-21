@@ -109,18 +109,27 @@ def buildLua():
                 status = runCommand("MACOSX_DEPLOYMENT_TARGET="+osx+" make && sudo make install")   
             else:
                 status = runCommand("make && sudo make install")
-
+            
             if status == 0:      
                 status = runCommand("sudo make install")
                 if status == 0:
-                    print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
-                    return True
+                    status = runCommand("ln -sf luajit-2.1.0-beta3 /usr/local/bin/luajit")
+                    if status == 0:
+                        print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
+                        return True
         print(red("\n\nFailed to install Lua (clay edition).\n Exit status: "+str(status)+"\n\n", ["bold"]))
         print(yellow("help: this may be because your platform is not supported. get more help at https://AsynchronousAI.github.io/clay/forum\n\n"))
         os.chdir(path)
         return False
 def buildPython():
-    pass
+    os.chdir("./clayPython")
+    if utilExists("python3") == False:
+        print("The python interpreter is required to install Python (clay edition).")
+        return
+    else:
+        if utilExists("pypy") == False:
+            os.system("python -mpip install cffi")
+            
 def buildRust():
     # At this time rust does not have a clay edition, so we will just install rust
     if utilExists("rustc") == False:
@@ -223,7 +232,7 @@ def runLua(scriptPath):
     script = "require('clayForLua')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("luajit "+scriptPath, True)
+    runCommand("luajit "+scriptPath+" -b "+scriptPath.replace(".lua", ".o"), True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 
@@ -464,7 +473,7 @@ def runRust(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "\n"+script
+    script = "mod clayForRust as clay\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     # if a file is found ith the name scriptPath.replace(".rs", "")
@@ -1113,7 +1122,51 @@ def clear():
     main()
 
 def pref():
-    pass
+    ### CATEGORIES
+    def langConfig():
+        pass
+    def compilers():
+        print("Select a compiler:")
+        print("1. JS")
+        print("2. Go")
+        print("3. Zig")
+        print("4. Moonscript")
+        print("5. Lua")
+        print("6. Go")
+        print("7. Brainf*ck")
+        print("8. Go")
+        print("9. Swift")
+        print("10. Rust")
+        print("11. Dart")
+        print(red("\n12. Exit"))
+        option = input("")
+        if int(option) <= 11:
+            langConfig(option)
+        elif option == "12":
+            main()
+        else:
+            print(red("Invalid response.", ["bold"]))
+            compilers()
+    ### ASK FOR INPUT
+    print("Select a category:\n\n")
+    print("1. Compilers")
+    print("2. Packages")
+    print("3. Account")
+    print( red ("\n4. Exit"))
+    option = input("")
+    if option == "1":
+        compilers()
+    elif option == "2":
+        pass
+    elif option == "3":
+        print("You currently arent logged in. Would you like to login (y/n)")
+        u = input("Username: ")
+        p = input("Password:")
+    elif option == "4":
+        main()
+    else:
+        print(red("Invalid response.", ["bold"]))
+        pref()
 
 def todo():
     print("Add package support, Add python (recieve) support, add built in builder.")

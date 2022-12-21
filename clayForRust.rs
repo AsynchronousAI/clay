@@ -1,66 +1,61 @@
-use std::fs;
-use std::fs::File;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::path::Path;
+pub fn send(file: &str, data: &str) {
+    // Read Runlogs.json file
+    let mut file = File::open("Runlogs.json").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
 
-use serde::{Deserialize, Serialize};
+    // Convert to JSON
+    let mut json: Value = serde_json::from_str(&contents).unwrap();
 
-#[derive(Serialize, Deserialize)]
-struct Runlogs {
-    requests: Vec<String>,
-    data: Vec<String>,
-    r#return: Vec<String>,
+    // Append file variable to JSON.requests
+    json["requests"].as_array_mut().unwrap().push(json!(file));
+
+    // Append data variable to JSON.data
+    json["data"].as_array_mut().unwrap().push(json!(data));
+
+    // Convert back to string
+    let json = json.to_string();
+
+    // Write to Runlogs.json file
+    let mut file = File::create("Runlogs.json").unwrap();
 }
 
-fn reply(value: String) {
-    let mut data: Runlogs = read_json("Runlogs.json").unwrap();
-    data.r#return.push(value);
-    write_json("Runlogs.json", data).unwrap();
+pub fn reply(data: &str) {
+    // Read Runlogs.json file
+    let mut file = File::open("Runlogs.json").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+
+    // Convert to JSON
+    let mut json: Value = serde_json::from_str(&contents).unwrap();
+
+    // Append data variable to JSON.return
+    json["retrun"].as_array_mut().unwrap().push(json!(data));
+
+    // Convert back to string
+    let json = json.to_string();
+
+    // Write to Runlogs.json file
+    let mut file = File::create("Runlogs.json").unwrap();
 }
 
-fn send(name: String, dt: String) {
-    let mut data: Runlogs = read_json("Runlogs.json").unwrap();
-    data.requests.push(name);
-    data.data.push(dt);
-    write_json("Runlogs.json", data).unwrap();
-}
+pub fn request(){
+    // Return newest value in JSON.data
 
-fn recieve() -> String {
-    let mut data: Runlogs = read_json("Runlogs.json").unwrap();
-    let value: String = data.data.pop().unwrap();
-    write_json("Runlogs.json", data).unwrap();
-    value
-}
+    // Read Runlogs.json file
+    let mut file = File::open("Runlogs.json").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
 
-fn read_json<T>(path: &str) -> Result<T, serde_json::Error>
-where
-    T: for<'de> Deserialize<'de>,
-{
-    let file = File::open(path)?;
-    let buf_reader = BufReader::new(file);
-    let data: T = serde_json::from_reader(buf_reader)?;
+    // Convert to JSON
+    let mut json: Value = serde_json::from_str(&contents).unwrap();
 
-    Ok(data)
-}
+    // Get newest value in JSON.data
+    let data = json["data"].as_array_mut().unwrap().pop().unwrap();
 
-fn write_json<T>(path: &str, data: T) -> Result<(), serde_json::Error>
-where
-    T: Serialize,
-{
-    let json = serde_json::to_string(&data)?;
-    let path = Path::new(path);
-    let display = path.display();
+    // Convert back to string
+    let data = data.to_string();
 
-    let mut file = match File::create(path) {
-        Err(why) => panic!("couldn't create {}: {}", display, why),
-        Ok(file) => file,
-    };
-
-    match file.write_all(json.as_bytes()) {
-        Err(why) => panic!("couldn't write to {}: {}", display, why),
-        Ok(_) => println!("successfully wrote to {}", display),
-    }
-
-    Ok(())
+    // Return data
+    return data;
 }
