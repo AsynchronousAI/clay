@@ -1,5 +1,5 @@
 import { Section } from '@/components/common/layout';
-
+import Typography from '@/components/common/Typography';
 export default function ResourcesPage() {
   return (
     <Section contained gutterY>
@@ -12,7 +12,7 @@ export default function ResourcesPage() {
         The Clay Extension for VSCode supports the clay versions of the languages, Give you a GUI based experience for creating clay projects and more. The extension is currently in beta and is not available for public use.
         <Typography variant="headline-reduced">Playground</Typography>
         The Clay Playground is a web based version of the Clay API made for testing. You can visit it <a href={"https://example.com"}>here</a>.
-        
+
 
     </Section>
   );
