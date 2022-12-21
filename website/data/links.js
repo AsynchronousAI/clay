@@ -6,6 +6,7 @@ const links = {
   twitter: 'https://twitter.com/AsynchronousAI',
   discord: 'https://discord.gg/vChUXVf9Em',
   license: 'https://github.com/AsynchronousAI/clay/blob/main/LICENSE.md',
+  playground: 'https://asynchronousai.github.io/clay/',
 };
 
 export default links;

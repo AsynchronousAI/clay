@@ -18,9 +18,14 @@ const navigation = [
      label: 'Extensions',
   },
   {
+    href: links.playground,
+    label: 'Playground',
+  },
+  {
     href: links.githubRepo,
     label: 'GitHub',
   },
+  
 ];
 
 export default navigation;
