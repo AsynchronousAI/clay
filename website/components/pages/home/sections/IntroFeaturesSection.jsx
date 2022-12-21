@@ -19,7 +19,7 @@ const IntroFeaturesSection = () => {
               <Info size={28} /> 
             </div>
             <Typography variant="intro">
-              CodeEdit is not meant to replace Xcode but rather supplement it for projects not intended for Apple platforms. We believe every type of developer deserves a great experience and excellent performance.
+              clay is not meant to replace Xcode but rather supplement it for projects not intended for Apple platforms. We believe every type of developer deserves a great experience and excellent performance.
             </Typography>
           </Stack>
         </GridItem>
@@ -50,7 +50,7 @@ const IntroFeaturesSection = () => {
               Completely Open Source
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              CodeEdit is developed for you by developers like you. Don&apos;t like something? Want a new feature? Just create an issue or submit a PR.
+              clay is developed for you by developers like you. Don&apos;t like something? Want a new feature? Just create an issue or submit a PR.
             </Typography>
           </Stack>
         </GridItem>
@@ -61,7 +61,7 @@ const IntroFeaturesSection = () => {
               Extensible & customizable
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              We aren&apos;t going to guess. Make CodeEdit your own, tailored to
+              We aren&apos;t going to guess. Make clay your own, tailored to
               your needs.
             </Typography>
           </Stack>

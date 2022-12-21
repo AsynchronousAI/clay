@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <div>
       <Ribbon onClick={() => window.open(links.githubProject)}>
-        CodeEdit is currently in development. Check out the roadmap.
+        clay is currently in development. Check out the roadmap.
       </Ribbon>
       <HeroSection />
       <IntroFeaturesSection />

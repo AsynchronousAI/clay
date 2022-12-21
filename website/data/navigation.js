@@ -3,7 +3,7 @@ import links from '@/data/links';
 const navigation = [
   {
     href: '/',
-    label: 'CodeEdit',
+    label: 'clay',
   },
   // {
   //   href: '/whats-new',

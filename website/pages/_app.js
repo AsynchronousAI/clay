@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
-        <title>CodeEdit</title>
+        <title>clay</title>
       </Head>
       <Header />
       <main>

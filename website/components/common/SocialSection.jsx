@@ -29,7 +29,7 @@ const SocialSection = () => {
             <TwitterIcon />
             <Typography variant="headline-body">Keep up to date</Typography>
             <Typography variant="body-reduced">
-              Stay in the know! Follow us @CodeEditApp on Twitter to get the
+              Stay in the know! Follow us @clayApp on Twitter to get the
               latest updates.
             </Typography>
             <Typography variant="body-reduced"><a href={links.twitter}>Follow Us</a></Typography>
@@ -40,7 +40,7 @@ const SocialSection = () => {
             <DiscordIcon />
             <Typography variant="headline-body">Join the conversation</Typography>
             <Typography variant="body-reduced">
-              Some of the best ideas come from our community. Join us to influence CodeEdit.
+              Some of the best ideas come from our community. Join us to influence clay.
             </Typography>
             <Typography variant="body-reduced"><a href={links.discord}>Start a conversation</a></Typography>
           </Stack>
@@ -50,7 +50,7 @@ const SocialSection = () => {
             <GitHubIcon />
             <Typography variant="headline-body">Start Contributing</Typography>
             <Typography variant="body-reduced">
-              Help shape the future of CodeEdit. Submit an issue or become a contributor today.
+              Help shape the future of clay. Submit an issue or become a contributor today.
             </Typography>
             <Typography variant="body-reduced"><a href={links.githubRepo}>Check it out</a></Typography>
           </Stack>

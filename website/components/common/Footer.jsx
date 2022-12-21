@@ -106,13 +106,13 @@ function Footer() {
         <SocialSection />
         <FooterMini>
           <MiniFooterTop>
-            <div>To view the latest CodeEdit developments, visit <a href={links.githubProject}>our roadmap</a>.</div>
+            <div>To view the latest clay developments, visit <a href={links.githubProject}>our roadmap</a>.</div>
             <ColorSchemeToggle />
           </MiniFooterTop>
           <MiniFooterBottom>
             <LegalCopyright>
               Copyright &copy; {currentYear}{' '}
-              <a href="https://codeedit.app">CodeEdit</a>. All rights reserved.
+              <a href="https://clay-code.vercel.app">clay</a>. All rights reserved.
             </LegalCopyright>
             <LegalLinks>
               {/* <LegalLink href="/legal/tos">

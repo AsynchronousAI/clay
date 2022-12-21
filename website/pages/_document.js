@@ -36,32 +36,32 @@ export default class MyDocument extends Document {
           <meta name="apple-mobile-web-app-capable" content="yes"></meta>
           <meta
             property="og:title"
-            content="CodeEdit – A native code editor for macOS"
+            content="clay – A native code editor for macOS"
           ></meta>
           <meta
             property="og:image"
-            content="https://www.codeedit.app/social-preview.jpg"
+            content="https://www.clay-code.vercel.app/social-preview.jpg"
           ></meta>
           <meta
             property="og:description"
             content="A lightweight, natively built editor. Open source. Free forever."
           ></meta>
-          <meta property="og:url" content="https://www.codeedit.app"></meta>
+          <meta property="og:url" content="https://www.clay-code.vercel.app"></meta>
           <meta
             name="twitter:image"
-            content="https://www.codeedit.app/social-preview.jpg"
+            content="https://www.clay-code.vercel.app/social-preview.jpg"
           ></meta>
           <meta
             name="twitter:image:src"
-            content="https://www.codeedit.app/social-preview.jpg"
+            content="https://www.clay-code.vercel.app/social-preview.jpg"
           ></meta>
           <meta name="twitter:card" content="summary_large_image"></meta>
-          <meta name="twitter:site" content="@CodeEditApp"></meta>
-          <meta name="twitter:creator" content="@CodeEditApp"></meta>
-          <meta name="twitter:title" content="CodeEdit for macOS"></meta>
+          <meta name="twitter:site" content="@clayApp"></meta>
+          <meta name="twitter:creator" content="@clayApp"></meta>
+          <meta name="twitter:title" content="clay for macOS"></meta>
           <meta
             name="twitter:description"
-            content="CodeEdit, a lightweight, natively built editor for macOS. Open source. Free forever."
+            content="clay, a lightweight, natively built editor for macOS. Open source. Free forever."
           ></meta>
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         </Head>

@@ -28,18 +28,18 @@ const HeroSection = () => {
                       width={128}
                       height={128}
                       src="/product-icon.png"
-                      alt="CodeEdit product icon"
+                      alt="clay product icon"
                     />
                   </ProductIconWrap>
                   <Typography variant="eyebrow-elevated" as="h1">
-                    CodeEdit for macOS
+                    clay for macOS
                   </Typography>
                   <Typography variant="headline-elevated">
                     A lightweight, natively built editor.
                     Open source. Free forever.
                   </Typography>
                   <Typography variant="intro-elevated" color="tertiary" gutterBottom>
-                    CodeEdit is an exciting new code editor written entirely and unapologetically for macOS. Develop any project using any language at speeds like never before with increased efficiency and reliability in an editor that feels right at home on your Mac.
+                    clay is an exciting new code editor written entirely and unapologetically for macOS. Develop any project using any language at speeds like never before with increased efficiency and reliability in an editor that feels right at home on your Mac.
                   </Typography>
                   <Button disabled>Download Coming Soon</Button>
                   <Typography variant="body-reduced" color="tertiary">v0.0.1 | macOS 12+</Typography>

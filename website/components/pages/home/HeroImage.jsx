@@ -145,8 +145,8 @@ const HeroImage = ({ percentage }) => {
         <Image
           width={987.275}
           height={580.75}
-          src={`/codeedit-window-${colorScheme}.png`}
-          alt="CodeEdit screenshot"
+          src={`/clay-window-${colorScheme}.png`}
+          alt="clay screenshot"
         /> 
       </ImageWrap>
       <StyledHardwareLockup style={{ opacity: adjustedPercentage, transform: `translateY(-${adjustedPercentage * 15}%)  scale(${1 + (1 - adjustedPercentage) * -.1})` }} />

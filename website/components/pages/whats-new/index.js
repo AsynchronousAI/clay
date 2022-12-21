@@ -16,17 +16,17 @@ export default function WhatsNewPage() {
     <div>
       <HeroSection contained gutterY>
         <Typography variant="headline" as="h1">
-          What’s included in CodeEdit
+          What’s included in clay
         </Typography>
         <HeroIntro variant="intro">
-          Learn about the key features available in CodeEdit, the code editor
+          Learn about the key features available in clay, the code editor
           for building anything in any language. For detailed information on
           updates in the latest released versions, including each beta release,
-          visit the <a>CodeEdit Release Notes</a>.
+          visit the <a>clay Release Notes</a>.
         </HeroIntro>
       </HeroSection>
       <Section contained gutterBottom>
-        <Typography variant="headline-reduced">CodeEdit 1.0</Typography>
+        <Typography variant="headline-reduced">clay 1.0</Typography>
       </Section>
     </div>
   );

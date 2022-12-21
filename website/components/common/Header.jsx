@@ -127,7 +127,7 @@ function Header() {
       <Wrapper>
         <HeaderContainer>
           <Title>
-            <Link href="/">CodeEdit</Link>
+            <Link href="/">clay</Link>
           </Title>
           <Menu>
             <MenuCtaAnchor>
@@ -155,10 +155,10 @@ function Header() {
             <Actions>
               <Action>
                 <label
-                  htmlFor="codeeditnav-menustate"
-                  className="codeeditnav-menucta"
+                  htmlFor="claynav-menustate"
+                  className="claynav-menucta"
                 >
-                  <span className="codeeditnav-menucta-chevron"></span>
+                  <span className="claynav-menucta-chevron"></span>
                 </label>
               </Action>
               <Action>
