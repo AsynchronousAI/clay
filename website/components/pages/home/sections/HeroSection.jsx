@@ -35,14 +35,14 @@ const HeroSection = () => {
                     clay for macOS
                   </Typography>
                   <Typography variant="headline-elevated">
-                    A lightweight, natively built editor.
+                    A modern runtime for all of your code.
                     Open source. Free forever.
                   </Typography>
                   <Typography variant="intro-elevated" color="tertiary" gutterBottom>
-                    clay is an exciting new code editor written entirely and unapologetically for macOS. Develop any project using any language at speeds like never before with increased efficiency and reliability in an editor that feels right at home on your Mac.
+                    Clay is an exciting new runtime made for all your code to work in unity. Develop any project using any language at speeds like never before with increased efficienc and reliability, while being able to bind all your programming languages together as one, all while being open source and free forever.
                   </Typography>
                   <Button disabled>Download Coming Soon</Button>
-                  <Typography variant="body-reduced" color="tertiary">v0.0.1 | macOS 12+</Typography>
+                  <Typography variant="body-reduced" color="tertiary">v0.0.1 | macOS 12+ | Windows 10+ | Linux</Typography>
                 </Stack>
               </Column>
             </Row>

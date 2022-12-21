@@ -19,16 +19,16 @@ const IntroFeaturesSection = () => {
               <Info size={28} /> 
             </div>
             <Typography variant="intro">
-              clay is not meant to replace Xcode but rather supplement it for projects not intended for Apple platforms. We believe every type of developer deserves a great experience and excellent performance.
+              Clay is meant to be a runtime where your code runs incredibly fast and efficiently while being able to bind all your programming languages together as one.
             </Typography>
           </Stack>
         </GridItem>
         <GridItem>
           <Stack>
             <Zap size={gap} />
-            <Typography variant="intro" gutterTop>macOS Native</Typography>
+            <Typography variant="intro" gutterTop>Incredible Speeds</Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              Harness the full power of your Mac, something only possible with our completely native architecture developed in Swift.
+              Experience your code running faster with upgraded a new compiler for every language you use.
             </Typography>
           </Stack>
         </GridItem>
@@ -36,10 +36,10 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Feather size={gap} />
             <Typography variant="intro" gutterTop>
-              Lightweight Yet Powerful
+              Lightweight
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              Designed to be lean with limitless potential. 
+              Designed to be simple with a limitless potential, clay is the perfect runtime for any project.
             </Typography>
           </Stack>
         </GridItem>
@@ -50,7 +50,7 @@ const IntroFeaturesSection = () => {
               Completely Open Source
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              clay is developed for you by developers like you. Don&apos;t like something? Want a new feature? Just create an issue or submit a PR.
+              Clay is developed for you by developers like you. Don&apos;t like something? Want a new feature? Just create an issue or submit a PR.
             </Typography>
           </Stack>
         </GridItem>
@@ -58,11 +58,10 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Sliders size={gap} />
             <Typography variant="intro" gutterTop>
-              Extensible & customizable
+              Unified languages
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              We aren&apos;t going to guess. Make clay your own, tailored to
-              your needs.
+              Clay allows you to bind all your languages together. No more picking which language is best, Why not use them all at once?
             </Typography>
           </Stack>
         </GridItem>
@@ -70,10 +69,10 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Layout size={gap} />
             <Typography variant="intro" gutterTop>
-              Familiar &amp; Intuitive User Interface
+              Globalized packages
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              Our user interface is designed to be familiar for ease-of-use and productivity. 
+              All of your favorite packages no longer need to be used in a single language. Why limit yourself? Use any package in any language.
             </Typography>
           </Stack>
         </GridItem>
@@ -81,10 +80,10 @@ const IntroFeaturesSection = () => {
           <Stack>
             <Tool size={gap} />
             <Typography variant="intro" gutterTop>
-              Better tools to get the job done
+              Utility belts
             </Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              Feel connected to the code you are writing with tools to keep you on track. 
+              Install utility belts which gives you a set of tools to use in your code. Making a website? Install the web utilities and get all the tools you need.
             </Typography>
           </Stack>
         </GridItem>

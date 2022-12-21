@@ -44,7 +44,7 @@ export default class MyDocument extends Document {
           ></meta>
           <meta
             property="og:description"
-            content="A lightweight, natively built editor. Open source. Free forever."
+            content="A modern runtime for all your code. Open source. Free forever."
           ></meta>
           <meta property="og:url" content="https://www.clay-code.vercel.app"></meta>
           <meta
@@ -61,7 +61,7 @@ export default class MyDocument extends Document {
           <meta name="twitter:title" content="clay for macOS"></meta>
           <meta
             name="twitter:description"
-            content="clay, a lightweight, natively built editor for macOS. Open source. Free forever."
+            content="clay, A modern runtime for all your code for macOS. Open source. Free forever."
           ></meta>
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         </Head>
