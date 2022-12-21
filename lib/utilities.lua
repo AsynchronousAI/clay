@@ -1,4 +1,63 @@
-local ml = {}
+local ml = {_IMPORTED = {"clay"}, _VERSION = "0.1.0"}
+
+function ml.install(file)
+    table.insert(ml._IMPORTED, file)
+    build()
+end
+
+function ml.uninstall(file)
+    for i, v in ipairs(ml._IMPORTED) do
+        if v == file then
+            table.remove(ml._IMPORTED, i)
+            return
+        end
+    end
+    build()
+end
+
+function ml.isInstalled(file)
+    for i, v in ipairs(ml._IMPORTED) do
+        if v == file then
+            return true
+        end
+    end
+    return false
+end
+
+function ml.version()
+    return ml._VERSION
+end
+
+function ml.build()
+    for i, v in ipairs(ml._IMPORTED) do
+        -- check if directory called v exists
+        if fs.exists(v, true) then
+            -- check if v is a directory
+            if fs.isDir(v) then
+                -- check if v/init.lua exists
+                if fs.exists(v .. "/init.lua", true) then
+                    -- load v/init.lua
+                    local file = require(v .. "/init.lua")
+                    for i, v in pairs(file) do
+                        ml[i] = v
+                    end
+                else
+                    error("Utility Belt not configured: " .. v)
+                end
+            else 
+                error("Utility Belt not valid: " .. v)
+            end
+        else
+            error("Utility Belt not found: " .. v)
+        end
+    end
+end
+
+---------------------------------------------------
+-- Clay utilities.
+-- @section clay
+---------------------------------------------------
+
 local select,pairs = select,pairs
 local function_arg
 
@@ -959,5 +1018,7 @@ if not rawget(_G,'NO_MICROLIGHT_ARRAY') then
 end
 
 ml.Array = Array
+
+_G.util = ml
 
 return ml

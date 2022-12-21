@@ -129,7 +129,8 @@ def buildPython():
     else:
         if utilExists("pypy") == False:
             os.system("python -mpip install cffi")
-            
+            if sys.platform == "darwin":
+                os.system("python setup.py install")
 def buildRust():
     # At this time rust does not have a clay edition, so we will just install rust
     if utilExists("rustc") == False:
@@ -473,7 +474,7 @@ def runRust(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "mod clayForRust as clay\n"+script
+    script = "mod clayForRust;\nconst clay = clayForRust;\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     # if a file is found ith the name scriptPath.replace(".rs", "")
