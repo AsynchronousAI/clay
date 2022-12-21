@@ -480,10 +480,6 @@ def runRust(scriptPath):
     # if a file is found ith the name scriptPath.replace(".rs", "")
     runCommand("rustc "+scriptPath, True) 
     # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
-    if sys.platform == "win32":
-        runCommand("./"+scriptPath.replace(".rs", ".exe"), True)
-    else:
-        runCommand("./"+scriptPath.replace(".rs", ""), True)
     os.chdir(path)
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -663,7 +659,9 @@ def new():
         "author": author,
         "description": description,
         "script": script,
-        "dependencies": {}
+        "dependencies": {},
+        "scripts": {},
+        "files": {},
     }
     if not exists("dependencies"):
         os.mkdir("dependencies")
@@ -767,7 +765,8 @@ def shell():
 def run():
     if exists("package.json") == True: 
         with open('package.json', 'r') as f:
-          script = (json.load(f))["script"]
+          package = (json.load(f))
+          script = package["script"]
         data = {
             "requests": ["void"],
             "data": ["void"],    
@@ -781,13 +780,32 @@ def run():
         global threadsrunning 
         threadsrunning = 0
 
+        print(magenta("\nCompiling scripts...\n\n(This process is only done during development, upon release the scripts will be compiled and ready to run)\n", ["bold"]))
+        for i in range(0, len(package.files)):
+            if package.files[i] == "Runlogs.json":
+                print(red("\nError: Runlogs.json is a reserved file name. Please rename it.\n", ["bold"]))
+                return
+            elif package.files[i] == "package.json":
+                print(red("\nError: package.json is a reserved file name. Please rename it.\n", ["bold"]))
+                return
+
+            execute(package.files[i]) # compile scripts
+            if sys.platform == "win32":
+                os.system("start "+package.files[i].split(".")[0]+'.exe')
+                return
+            os.system("./"+package.files[i].split(".")[0])
+            
+
         # check if any files have the same name as eachother, if so then output an error
         files = os.listdir()
         for file in files:
             if file:
                 if files.count(file) > 1:
-                    print(red("\nError: Multiple files with the same name.\n"))
+                    print(red("\nError: Multiple files with the same name.\n", ["bold"]))
                     return
+
+        # compile scripts
+
         def onChange(data):
                 # convert data to a table
             if data:
