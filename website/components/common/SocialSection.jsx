@@ -29,7 +29,7 @@ const SocialSection = () => {
             <TwitterIcon />
             <Typography variant="headline-body">Keep up to date</Typography>
             <Typography variant="body-reduced">
-              Stay in the know! Follow us @clayApp on Twitter to get the
+              Stay in the know! Follow us @AsynchronousAI on Twitter to get the
               latest updates.
             </Typography>
             <Typography variant="body-reduced"><a href={links.twitter}>Follow Us</a></Typography>

@@ -56,8 +56,8 @@ export default class MyDocument extends Document {
             content="https://www.clay-code.vercel.app/social-preview.jpg"
           ></meta>
           <meta name="twitter:card" content="summary_large_image"></meta>
-          <meta name="twitter:site" content="@clayApp"></meta>
-          <meta name="twitter:creator" content="@clayApp"></meta>
+          <meta name="twitter:site" content="@AsynchronousAI"></meta>
+          <meta name="twitter:creator" content="@AsynchronousAI"></meta>
           <meta name="twitter:title" content="clay for macOS"></meta>
           <meta
             name="twitter:description"
