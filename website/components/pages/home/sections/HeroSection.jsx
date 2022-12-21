@@ -25,7 +25,7 @@ const HeroSection = () => {
                 <Stack gap={2} align="center">
                   <ProductIconWrap>
                     <Image
-                      width={692}
+                      width={512}
                       height={512}
                       src="/product-icon.png"
                       alt="clay product icon"
