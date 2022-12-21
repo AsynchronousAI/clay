@@ -4,7 +4,7 @@ import Typography from '@/components/common/Typography';
 export default function DeveloperPage() {
   return (
     <Section contained gutterY>
-      <Typography variant="headline">Calling all Developers</Typography>
+      <Typography variant="headline">Developer</Typography>
     </Section>
   );
 }
