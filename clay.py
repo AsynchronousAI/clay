@@ -806,7 +806,6 @@ def run():
         threadsrunning = 0
 
         print(magenta("\nCompiling scripts...\n\n(This process is only done during development, upon release the scripts will be compiled and ready to run)\n", ["bold"]))
-        print(package)
         for i in range(0, len(package["files"])):
             if package["files"][i] == "Runlogs.json":
                 print(red("\nError: Runlogs.json is a reserved file name. Please rename it.\n", ["bold"]))
