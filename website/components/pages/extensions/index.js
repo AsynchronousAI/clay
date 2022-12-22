@@ -6,10 +6,12 @@ export default function DevPage() {
     <Section contained gutterY>
       <Typography variant="headline">Clay Extensions</Typography>
 {"\n"}
-      <Typography variant="headline-reduced">VSCode</Typography>
+    <Section contained gutterTop={i === 0} gutterBottom key={variant}>
+          <Typography variant="eyebrow-super">VSCode</Typography>
       The Clay Extension for VSCode supports the clay versions of the languages, Give you a GUI based experience for creating clay projects and more. The extension is currently in beta and is not available for public use.
-      {"\n"}
-      <Typography variant="headline-reduced">Store</Typography>
+       </Section>  
+        <Section contained gutterTop={i === 0} gutterBottom key={variant}>
+      <Typography variant="eyebrow-super">Store</Typography>
       <ul>
       <a>Clay Mobile App Utility</a>
 {"\n"}
@@ -34,6 +36,7 @@ export default function DevPage() {
       print(utilities.words.random())
       ```
       </ul>
+      </Section>
     </Section>
   );
 }
