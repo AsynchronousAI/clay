@@ -28,7 +28,7 @@ const IntroFeaturesSection = () => {
             <Zap size={gap} />
             <Typography variant="intro" gutterTop>Incredible Speeds</Typography>
             <Typography variant="intro" style={{ opacity: .5 }}>
-              Experience your code running faster with upgraded a new compiler for every language you use.
+              Experience your code running faster with a brand new upgraded compiler for every language you use.
             </Typography>
           </Stack>
         </GridItem>
