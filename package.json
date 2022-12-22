@@ -1,1 +1,1 @@
-{"name":"a","version":"1.0.0","author":"aarav","description":"","script":"gridtest.rs"}
+{"name": "Test project", "version": "1.0.0", "author": "john doe", "description": "A test project that can print hello world", "script": "index.py", "dependencies": {}, "scripts": {}, "files": {}}
