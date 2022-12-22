@@ -5,6 +5,7 @@ export default function DeveloperPage() {
   return (
     <Section contained gutterY>
       <Typography variant="headline">Developer</Typography>
+      
     </Section>
   );
 }

@@ -1,4 +1,4 @@
-local ml = {_IMPORTED = {"clay"}, _VERSION = "0.1.0"}
+local ml = {_IMPORTED = {"home"}, _VERSION = "0.1.0"}
 
 function ml.install(file)
     table.insert(ml._IMPORTED, file)

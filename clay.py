@@ -8,12 +8,10 @@
 import os
 import json
 from os.path import exists
-from simple_colors import *
 import sys
 from distutils.spawn import find_executable
 import threading
-import simplejson as json
-import json_parser
+import json
 import shutil
 from multiprocessing import Process
 from subprocess import call
@@ -23,6 +21,33 @@ import platform
 commands = []
 runInstall = True
 path = os.getcwd()
+# colors
+def red(text, styles = []):
+    return color(text, 31, styles)
+def green(text, styles = []):
+    return color(text, 32, styles)
+def yellow(text, styles = []):
+    return color(text, 33, styles)
+def blue(text, styles = []):
+    return color(text, 34, styles)
+def magenta(text, styles = []):
+    return color(text, 35, styles)
+def cyan(text, styles = []):
+    return color(text, 36, styles)
+def white(text, styles = []):
+    return color(text, 37, styles)
+def color(text, color, styles = []):
+    style = ""
+    for s in styles:
+        if s == "bold":
+            style += "1;"
+        elif s == "underline":
+            style += "4;"
+        elif s == "reverse":
+            style += "7;"
+        elif s == "concealed":
+            style += "8;"
+    return "\033["+style+str(color)+"m"+text+"\033[0m"
 # run functions
 def execute(script):
     print(magenta("Compiling "+script+"...\n\n"))
@@ -595,7 +620,7 @@ def runPHP(scriptPath):
 
 # commands
 def help():
-    print(blue("clay", ['bold'])+": the only runtime you need, supports hundreds of languages while maintaining dazzling speeds.\n\nCommands:\n "+blue("clay new", ['bold'])+" \t\t\t\t create a new project \n "+yellow("clay run", ['bold'])+" \t\t\t\t run a command in the project \n "+green("clay install", ['bold'])+" \t\t\t\t install a package in the project \n "+green("clay uninstall", ['bold'])+" \t\t\t uninstall a package in the project \n "+green("clay list", ['bold'])+" \t\t\t\t list all packages in the project  \n "+green("clay clear", ['bold'])+" \t\t\t\t clear all packages in the project \n "+green("clay add", ['bold'])+" \t\t\t\t add a package in the package.json file \n "+green("clay remove", ['bold'])+" \t\t\t\t remove a package in the package.json file \n "+ magenta("clay help", ['bold'])+" \t\t\t\t show this message \n "+magenta("clay pref", ['bold'])+" \t\t\t\t configurate a package or clay \n\n Options: \n "+black("--version", ['dim'])+" \t\t\t\t show the version number")
+    print(blue("clay", ['bold'])+": the only runtime you need, supports hundreds of languages while maintaining dazzling speeds.\n\nCommands:\n "+blue("clay new", ['bold'])+" \t\t\t\t create a new project \n "+yellow("clay run", ['bold'])+" \t\t\t\t run a command in the project \n "+green("clay install", ['bold'])+" \t\t\t\t install a package in the project \n "+green("clay uninstall", ['bold'])+" \t\t\t uninstall a package in the project \n "+green("clay list", ['bold'])+" \t\t\t\t list all packages in the project  \n "+green("clay clear", ['bold'])+" \t\t\t\t clear all packages in the project \n "+green("clay add", ['bold'])+" \t\t\t\t add a package in the project.json file \n "+green("clay remove", ['bold'])+" \t\t\t\t remove a package in the project.json file \n "+ magenta("clay help", ['bold'])+" \t\t\t\t show this message \n "+magenta("clay pref", ['bold'])+" \t\t\t\t configurate a package or clay \n\n Options: \n "+black("--version", ['dim'])+" \t\t\t\t show the version number")
     main()
 def void():
     runInstall = False
@@ -603,18 +628,18 @@ def void():
     main()
 def add(nm="void", p="void"):
     called = nm == "void" and p == "void"
-    # check if package.json exists
-    if not exists("package.json"):
-        print("No package.json file found. Run "+blue("clay new", ['bold'])+" to create a new project.")
+    # check if project.json exists
+    if not exists("project.json"):
+        print("No project.json file found. Run "+blue("clay new", ['bold'])+" to create a new project.")
         main()
     else:
-        # read package.json
+        # read project.json
         if nm == "void":
             nm = input("Package name: ")
         if p == "void":
             p = input("Package provider: ")
         
-        with open('package.json', 'r') as f:
+        with open('project.json', 'r') as f:
             dataTable = json.loads(f.read())
         
         # append nm into dataTable.dependencies (dict)
@@ -623,13 +648,13 @@ def add(nm="void", p="void"):
     if called:
         main()
 def remove(nm):
-    # check if package.json exists
-    if not exists("package.json"):
-        print("No package.json file found. Run "+blue("clay new", ['bold'])+" to create a new project.")
+    # check if project.json exists
+    if not exists("project.json"):
+        print("No project.json file found. Run "+blue("clay new", ['bold'])+" to create a new project.")
         main()
     else:
-        # read package.json
-        with open('package.json', 'r') as f:
+        # read project.json
+        with open('project.json', 'r') as f:
             dataTable = json.loads(f.read())
         # find a item in dataTable.dependencies with name nm
         for i in dataTable['dependencies']:
@@ -637,8 +662,8 @@ def remove(nm):
                 dataTable['dependencies'].remove(i)
         
         
-        # write package.json
-        with open('package.json', 'w') as f:
+        # write project.json
+        with open('project.json', 'w') as f:
             f.write(json.dumps(dataTable))
 
     main()
@@ -670,7 +695,7 @@ def new():
         with open(script, 'w') as f:
             f.write("")
 
-    with open('package.json', 'w') as f:
+    with open('project.json', 'w') as f:
         f.write(json.dumps(dataTable))
 
     main()
@@ -763,8 +788,8 @@ def shell():
     
     main()
 def run():
-    if exists("package.json") == True: 
-        with open('package.json', 'r') as f:
+    if exists("project.json") == True: 
+        with open('project.json', 'r') as f:
           package = (json.load(f))
           script = package["script"]
         data = {
@@ -781,19 +806,20 @@ def run():
         threadsrunning = 0
 
         print(magenta("\nCompiling scripts...\n\n(This process is only done during development, upon release the scripts will be compiled and ready to run)\n", ["bold"]))
-        for i in range(0, len(package.files)):
-            if package.files[i] == "Runlogs.json":
+        print(package)
+        for i in range(0, len(package["files"])):
+            if package["files"][i] == "Runlogs.json":
                 print(red("\nError: Runlogs.json is a reserved file name. Please rename it.\n", ["bold"]))
                 return
-            elif package.files[i] == "package.json":
-                print(red("\nError: package.json is a reserved file name. Please rename it.\n", ["bold"]))
+            elif package["files"][i] == "project.json":
+                print(red("\nError: project.json is a reserved file name. Please rename it.\n", ["bold"]))
                 return
 
-            execute(package.files[i]) # compile scripts
+            execute(package["files"][i]) # compile scripts
             if sys.platform == "win32":
-                os.system("start "+package.files[i].split(".")[0]+'.exe')
+                os.system("start "+package["files"][i].split(".")[0]+'.exe')
                 return
-            os.system("./"+package.files[i].split(".")[0])
+            os.system("./"+package["files"][i].split(".")[0])
             
 
         # check if any files have the same name as eachother, if so then output an error
@@ -809,7 +835,7 @@ def run():
         def onChange(data):
                 # convert data to a table
             if data:
-                data = json_parser.parse(data)
+                data = json.loads(data)
                 if len(data["requests"]) == 0:
                     return
                 # get last value of requests
@@ -865,7 +891,7 @@ def compile():
     pass
 
 def install():
-    if exists("package.json") == True:
+    if exists("project.json") == True:
         technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
         if technique == "npm":
             if utilExists("clayJS") == False:
@@ -877,7 +903,7 @@ def install():
             print("Installing "+name+"...")
             os.system("clayJS install "+name+" --prefix dependencies")
 
-            os.remove("dependencies/package.json")
+            os.remove("dependencies/project.json")
             os.remove("dependencies/package-lock.json")
 
             # rather than keeping the items in node_modules, we will keep the items in dependencies and delete the node_modules folder
@@ -887,8 +913,8 @@ def install():
             # delete node_modules
             shutil.rmtree("dependencies/node_modules")
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("npm:"+name)))
         elif technique == "git":
             if utilExists("git") == False:
@@ -919,8 +945,8 @@ def install():
             print("Installing "+url+"...")
             os.system("git clone "+url+" dependencies/"+url.split("/")[-1])
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("git:"+url)))
         elif technique == "url":
             url = input("URL: ")
@@ -928,8 +954,8 @@ def install():
             print("Installing "+url+"...")
             os.system("curl "+url+" > dependencies/"+url.split("/")[-1])
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("url:"+url)))
         elif technique == "luaRocks" :
             if utilExists("luarocks") == False:
@@ -960,8 +986,8 @@ def install():
             print("Installing "+name+"...")
             os.system("luarocks install "+name+" --tree=dependencies/"+name)
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("luaRocks:"+name)))
         elif technique == "pip":
             if utilExists("pip") == False:
@@ -994,8 +1020,8 @@ def install():
             print("Installing "+name+"...")
             os.system("pip install "+name+" --target dependencies/"+name)
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("pip:"+name)))
         elif technique == "gem":
             if utilExists("gem") == False:
@@ -1026,8 +1052,8 @@ def install():
             print("Installing "+name+"...")
             os.system("gem install "+name+" --install-dir dependencies/"+name)
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("gem:"+name)))
         elif technique == "cargo":
             if utilExists("cargo") == False:
@@ -1057,8 +1083,8 @@ def install():
             print("Installing "+name+"...")
             os.system("cargo install "+name+" --root dependencies/"+name)
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("cargo:"+name)))
         elif technique == "go":
             if utilExists("go") == False:
@@ -1088,8 +1114,8 @@ def install():
             print("Installing "+name+"...")
             os.system("go get "+name+" dependencies/"+name)
 
-            #with open('package.json', 'w') as f:
-            #    x = open("package.json", "r")
+            #with open('project.json', 'w') as f:
+            #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("go:"+name)))
         else:
             print("Invalid technique.")
