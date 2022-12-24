@@ -29,7 +29,7 @@
 
 ## Supported platforms: 
 Windows, Linux, and macOS (darwin).
-## Supported package managerds: 
+## Supported package managers: 
 pip, npm, and cargo, go, pip, luarocks, git, and gem.
 ## Supported shell languages: 
 python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, kotlin, php, and dart.
