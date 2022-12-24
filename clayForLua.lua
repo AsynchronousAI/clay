@@ -1,10 +1,6 @@
 clay = {}
 
 local json = {}
-
-
--- Internal functions.
-
 local function kind_of(obj)
   if type(obj) ~= 'table' then return type(obj) end
   local i = 1
@@ -13,7 +9,6 @@ local function kind_of(obj)
   end
   if i == 1 then return 'table' else return 'array' end
 end
-
 local function escape_str(s)
   local in_char  = {'\\', '"', '/', '\b', '\f', '\n', '\r', '\t'}
   local out_char = {'\\', '"', '/',  'b',  'f',  'n',  'r',  't'}
@@ -22,11 +17,6 @@ local function escape_str(s)
   end
   return s
 end
-
--- Returns pos, did_find; there are two cases:
--- 1. Delimiter found: pos = pos after leading space + delim; did_find = true.
--- 2. Delimiter not found: pos = pos after leading space;     did_find = false.
--- This throws an error if err_if_missing is true and the delim is not found.
 local function skip_delim(str, pos, delim, err_if_missing)
   pos = pos + #str:match('^%s*', pos)
   if str:sub(pos, pos) ~= delim then
@@ -37,9 +27,6 @@ local function skip_delim(str, pos, delim, err_if_missing)
   end
   return pos + 1, true
 end
-
--- Expects the given pos to be the first character after the opening quote.
--- Returns val, pos; the returned pos is after the closing quote character.
 local function parse_str_val(str, pos, val)
   val = val or ''
   local early_end_error = 'End of input found while parsing string.'
@@ -47,27 +34,20 @@ local function parse_str_val(str, pos, val)
   local c = str:sub(pos, pos)
   if c == '"'  then return val, pos + 1 end
   if c ~= '\\' then return parse_str_val(str, pos + 1, val .. c) end
-  -- We must have a \ character.
   local esc_map = {b = '\b', f = '\f', n = '\n', r = '\r', t = '\t'}
   local nextc = str:sub(pos + 1, pos + 1)
   if not nextc then error(early_end_error) end
   return parse_str_val(str, pos + 2, val .. (esc_map[nextc] or nextc))
 end
-
--- Returns val, pos; the returned pos is after the number's final character.
 local function parse_num_val(str, pos)
   local num_str = str:match('^-?%d+%.?%d*[eE]?[+-]?%d*', pos)
   local val = tonumber(num_str)
   if not val then error('Error parsing number at position ' .. pos .. '.') end
   return val, pos + #num_str
 end
-
-
--- Public values and functions.
-
 function json.stringify(obj, as_key)
-  local s = {}  -- We'll build the string as an array of strings to be concatenated.
-  local kind = kind_of(obj)  -- This is 'array' if it's an array or type(obj) otherwise.
+  local s = {} 
+  local kind = kind_of(obj) 
   if kind == 'array' then
     if as_key then error('Can\'t encode array as key.') end
     s[#s + 1] = '['
@@ -100,15 +80,13 @@ function json.stringify(obj, as_key)
   end
   return table.concat(s)
 end
-
-json.null = {}  -- This is a one-off table to represent the null value.
-
+json.null = {}  
 function json.parse(str, pos, end_delim)
   pos = pos or 1
   if pos > #str then error('Reached unexpected end of input.') end
-  local pos = pos + #str:match('^%s*', pos)  -- Skip whitespace.
+  local pos = pos + #str:match('^%s*', pos) 
   local first = str:sub(pos, pos)
-  if first == '{' then  -- Parse an object.
+  if first == '{' then 
     local obj, key, delim_found = {}, true, true
     pos = pos + 1
     while true do
@@ -191,6 +169,7 @@ end
 
 function reply(x)
   -- add x to data.return
+  -- check if Runlogs.json exists
   local file = io.open("Runlogs.json", "r")
   local returnJson = file:read("*all")
   file: close()

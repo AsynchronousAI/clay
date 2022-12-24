@@ -2,8 +2,6 @@
 # version: 0.0.1
 # license: MIT
 
-
-
 # libraries
 import os
 import json
@@ -147,15 +145,18 @@ def buildLua():
         os.chdir(path)
         return False
 def buildPython():
-    os.chdir("./clayPython")
-    if utilExists("python3") == False:
-        print("The python interpreter is required to install Python (clay edition).")
-        return
-    else:
-        if utilExists("pypy") == False:
-            os.system("python -mpip install cffi")
-            if sys.platform == "darwin":
-                os.system("python setup.py install")
+    if utilExists("pyinstaller") == False:
+        if utilExists("pip") == False:
+            print(red("\n\nPip is required to run this command.\n\n", ["bold"]))
+            return False
+        print(magenta("Python (clay edition) is not installed. Installing...", ["bold"]))
+        status = runCommand("pip install pyinstaller")
+        if status != 0:
+            print(red("\n\nFailed to install Python (clay edition). Error code: "+str(status)+"\n\n", ["bold"]))
+            return False
+        print(magenta("\nSuccessfully installed Python (clay edition)!\n\n\n"))
+    return True
+
 def buildRust():
     # At this time rust does not have a clay edition, so we will just install rust
     if utilExists("rustc") == False:
@@ -230,6 +231,7 @@ def buildRust():
             '''
 # languages
 def runPython(scriptPath):
+    print(yellow("Warning:", ["bold"])+" "+yellow("The following python script might take a while to compile. The clay team is currently working on a fix for this."))
     x = buildPython()
     if x == False:
         return
@@ -238,13 +240,14 @@ def runPython(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "from clayForPython import *\n"+script
+    if script.startswith("from clayForPython import *") == False:
+        script = "from clayForPython import *\n"+script
 
     # use the exec function to run the script, ex: exec(open('file.py').read())
     script = "from clayForPython import *\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
-    runCommand("python "+scriptPath, True)
+    runCommand("pyinstaller "+scriptPath, True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
 def runLua(scriptPath):
@@ -255,7 +258,8 @@ def runLua(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForLua')\n"+script
+    if script.startswith("require('clayForLua')") == False:
+        script = "require('clayForLua')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("luajit "+scriptPath+" -b "+scriptPath.replace(".lua", ".o"), True)
@@ -288,7 +292,8 @@ def runRuby(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForRuby')\n"+script
+    if script.startswith("require('clayForRuby')") == False:
+        script = "require('clayForRuby')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("ruby "+scriptPath, True)
@@ -320,7 +325,8 @@ def runSwift(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForSwift')\n"+script
+    if script.startswith("require('clayForSwift')") == False:
+        script = "require('clayForSwift')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("swift "+scriptPath, True)
@@ -352,7 +358,8 @@ def runC(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "#include <clayForC.h>\n"+script
+    if script.startswith("#include <clayForC.h>") == False:
+        script = "#include <clayForC.h>\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("gcc "+scriptPath, True)
@@ -385,7 +392,8 @@ def runKotlin(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForKotlin')\n"+script
+    if script.startswith("require('clayForKotlin')") == False:
+        script = "require('clayForKotlin')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("kotlinc "+scriptPath, True)
@@ -418,7 +426,8 @@ def runJava(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForJava')\n"+script
+    if script.startswith("require('clayForJava')") == False:
+        script = "require('clayForJava')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("javac "+scriptPath, True)
@@ -451,7 +460,8 @@ def runCpp(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForCpp')\n"+script
+    if script.startswith("require('clayForCpp')") == False:
+        script = "require('clayForCpp')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("g++ "+scriptPath, True)
@@ -484,7 +494,8 @@ def runCS(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForCsharp')\n"+script
+    if script.startswith("require('clayForCsharp')") == False:
+        script = "require('clayForCsharp')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("csc "+scriptPath, True)
@@ -499,12 +510,25 @@ def runRust(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "mod clayForRust;\nconst clay = clayForRust;\n"+script
+    if script.startswith("mod clayForRust;") == False:
+        script = "mod clayForRust;\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     # if a file is found ith the name scriptPath.replace(".rs", "")
     runCommand("rustc "+scriptPath, True) 
     # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
+    # check if dist folder exists
+    if os.path.exists("dist") == False:
+        os.mkdir("dist")
+    # check if a folder under the name of the filename exists
+    if os.path.exists("dist/"+scriptPath.replace(".rs", "")) == False:
+        os.mkdir("dist/"+scriptPath.replace(".rs", ""))
+    else:
+        print(red("\n\nTwo scripts have the same name, this can lead to unexpected behavior.\n\n", ["bold"]))
+    # move the file to the folder
+    shutil.move(scriptPath.replace(".rs", ""), "dist/"+scriptPath.replace(".rs", ""))
+
+
     os.chdir(path)
     with open(scriptPath, 'w') as f:
         f.write(orig)
@@ -515,7 +539,8 @@ def runJS(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForJS')\n"+script
+    if script.startswith("require('clayForJS')") == False:
+        script = "require('clayForJS')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("bun run "+scriptPath, True)
@@ -547,7 +572,8 @@ def runDart(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForDart')\n"+script
+    if script.startswith("require('clayForDart')") == False:
+        script = "require('clayForDart')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("dart "+scriptPath, True)
@@ -579,7 +605,8 @@ def runGo(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForGo')\n"+script
+    if script.startswith("require('clayForGo')") == False:
+        script = "require('clayForGo')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("go run "+scriptPath, True)
@@ -611,7 +638,8 @@ def runPHP(scriptPath):
     with open(scriptPath, 'r') as f:
           script = f.read()
     orig = script
-    script = "require('clayForPHP')\n"+script
+    if script.startswith("require('clayForPHP')") == False:
+        script = "require('clayForPHP')\n"+script
     with open(scriptPath, 'w') as f:
         f.write(script)
     runCommand("php "+scriptPath, True)
@@ -699,7 +727,124 @@ def new():
         f.write(json.dumps(dataTable))
 
     main()
+def publish():
+    print(magenta("Publising project to clay registry...", ['bold']))
+ 
+    # check if project.json exists
+    if not exists("project.json"):
+        print("No project.json file found. Run "+blue("clay new", ['bold'])+" to create a new project.")
+        main()
+    else:
+        # read project.json
+        with open('project.json', 'r') as f:
+            dataTable = json.loads(f.read())
+        # check if name is set
+        if dataTable['name'] == "":
+            print("You need to set a name in project.json")
+            main()
+        else:
+            # check if version is set
+            if dataTable['version'] == "":
+                print("You need to set a version in project.json")
+                main()
+            else:
+                # check if author is set
+                if dataTable['author'] == "":
+                    print("You need to set an author in project.json")
+                    main()
+                else:
+                    # check if description is set
+                    if dataTable['description'] == "":
+                        print("You need to set a description in project.json")
+                        main()
+                    else:
+                        # check if script is set
+                        if dataTable['script'] == "":
+                            print("You need to set a script in project.json")
+                            main()
+                        else:
+                            # check if dependencies is set
+                            if dataTable['dependencies'] == {}:
+                                print("You need to set dependencies in project.json")
+                                main()
+                            else:
+                                # check if scripts is set
+                                if dataTable['scripts'] == {}:
+                                    print("You need to set scripts in project.json")
+                                    main()
+                                else:
+                                    # check if files is set
+                                    if dataTable['files'] == {}:
+                                        print("You need to set files in project.json")
+                                        main()
+                                    else:
+                                        # check if dependencies are installed
+                                        if not exists("dependencies"):
+                                            print("You need to install dependencies before publishing.")
+                                            main()
+                                        else:
+                                            # check if script exists
+                                            if not exists(dataTable['script']):
+                                                print("You need to set a script in project.json")
+                                                main()
+                                            else:
+                                                # check if files exists
+                                                if not exists("files"):
+                                                    print("You need to set files in project.json")
+                                                    main()
+                                                else:
+                                                    # check if all files exists
+                                                    for i in dataTable['files']:
+                                                        if not exists(i):
+                                                            print("You need to set files in project.json")
+                                                            main()
 
+    # delete dependencies folder
+    if exists("dependencies"):
+        shutil.rmtree("dependencies")     
+
+    if not exists("publish.txt"):
+        with open('publish.txt', 'w') as f:
+            f.write("")
+    
+    # upload to github
+    if not utilExists("gh"):
+        print("You need to install gh to publish your project.")
+        main()
+    else:   
+        os.system("gh repo create")
+        os.system("gh repo clone "+dataTable['name'])
+        os.system("gh repo fork "+dataTable['name'])
+        os.system("gh repo view "+dataTable['name'])
+        os.system("gh repo view "+dataTable['name']+" --web")
+        os.system("gh repo view "+dataTable['name']+" --clone")
+        os.system("gh repo view "+dataTable['name']+" --ssh")
+        os.system("gh repo view "+dataTable['name']+" --http")
+        os.system("gh repo view "+dataTable['name']+" --git")
+        os.system("gh repo view "+dataTable['name']+" --releases")
+        os.system("gh repo view "+dataTable['name']+" --issues")
+        os.system("gh repo view "+dataTable['name']+" --pr")
+        os.system("gh repo view "+dataTable['name']+" --wiki")
+        os.system("gh repo view "+dataTable['name']+" --size")
+        os.system("gh repo view "+dataTable['name']+" --stars")
+        os.system("gh repo view "+dataTable['name']+" --forks")
+        os.system("gh repo view "+dataTable['name']+" --topics")
+        os.system("gh repo view "+dataTable['name']+" --license")
+        os.system("gh repo view "+dataTable['name']+" --default-branch")
+        os.system("gh repo view "+dataTable['name']+" --visibility")
+        os.system("gh repo view "+dataTable['name']+" --template")
+        os.system("gh repo view "+dataTable['name']+" --archived")
+        os.system("gh repo view "+dataTable['name']+" --empty")
+        os.system("gh repo view "+dataTable['name']+" --private")
+        os.system("gh repo view "+dataTable['name']+" --parent")
+        os.system("gh repo view "+dataTable['name']+" --source")
+        os.system("gh repo view "+dataTable['name']+" --network")
+        os.system("gh repo view "+dataTable['name']+" --mirror")
+        os.system("gh repo view "+dataTable['name']+" --homepage")
+        os.system("gh repo view "+dataTable['name']+" --description")
+        os.system("gh repo view "+dataTable['name']+" --created")
+        os.system("gh repo view "+dataTable['name']+" --pushed")
+                                         
 def shell():
     lang = input("Language: ")
 
@@ -800,6 +945,10 @@ def run():
         with open("Runlogs.json", "w") as file:
             json.dump(data, file)
 
+        # if dist folder exists clear it
+        if os.path.exists("dist"):
+            shutil.rmtree("dist")
+
         global threadrunning 
         threadrunning = True
         global threadsrunning 
@@ -807,20 +956,15 @@ def run():
 
         print(magenta("\nCompiling scripts...\n\n(This process is only done during development, upon release the scripts will be compiled and ready to run)\n", ["bold"]))
         for i in range(0, len(package["files"])):
+            print(i)
             if package["files"][i] == "Runlogs.json":
                 print(red("\nError: Runlogs.json is a reserved file name. Please rename it.\n", ["bold"]))
                 return
             elif package["files"][i] == "project.json":
                 print(red("\nError: project.json is a reserved file name. Please rename it.\n", ["bold"]))
                 return
-
-            execute(package["files"][i]) # compile scripts
-            if sys.platform == "win32":
-                os.system("start "+package["files"][i].split(".")[0]+'.exe')
-                return
-            os.system("./"+package["files"][i].split(".")[0])
-            
-
+            else:
+                execute(package["files"][i]) # compile scripts
         # check if any files have the same name as eachother, if so then output an error
         files = os.listdir()
         for file in files:
@@ -842,8 +986,18 @@ def run():
 
                 if last == "void":
                     return
-                execute(last)
+                execute(last) # compile just incase
+                if sys.platform == "win32":
+                    os.system("start dist/"+last.split(".")[0]+"/"+last.split(".")[0]+".exe")
+                    return
+                os.system("./dist/"+last.split(".")[0]+"/"+last.split(".")[0])
             
+
+
+
+            
+        # 1,000 lines!!! (I'm not joking)
+
         def routine():
             last = ""
             threadsrunning = 0
@@ -871,7 +1025,13 @@ def run():
         thread = threading.Thread(target=routine)
         thread.start()
         if exists(script) == True:
-            execute(script)
+            execute(script)# compile just incase
+            if sys.platform == "win32":
+                os.system("start dist/"+script.split(".")[0]+"/"+script.split(".")[0]+".exe")
+                return
+            os.system("./dist/"+script.split(".")[0]+"/"+script.split(".")[0])
+            
+
         else:
             print("Script not found. Try running "+blue("clay new", ['bold'])+" again to reconfigure.")
 
@@ -1283,6 +1443,45 @@ def terminal():
         main()
 
 if __name__ == "__main__":
-    print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
-    terminall = True
-    terminal()
+    try:
+        if sys.argv[1] == "terminal":
+            if terminall == False:
+                print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
+            terminall = True
+            terminal()
+        elif sys.argv[1] == "new":
+            new()
+        elif sys.argv[1] == "add":
+            add()
+        elif sys.argv[1] == "remove":
+            remove()
+        elif sys.argv[1] == "build":
+            massBuild()
+        elif sys.argv[1] == "run":
+            run()
+        elif sys.argv[1] == "install":
+            install()
+        elif sys.argv[1] == "uninstall":
+            uninstall()
+        elif sys.argv[1] == "list":
+            list()
+        elif sys.argv[1] == "help":
+            help()
+        elif sys.argv[1] == "--version":
+            version()
+        elif sys.argv[1] == "exit":
+            print(yellow("You are not in the clay terminal", ['bold']))
+        elif sys.argv[1] == "clear":
+            clear()
+        elif sys.argv[1] == "shell":
+            shell()
+        elif sys.argv[1] == "pref":
+            pref()
+        elif sys.argv[1] == "ignore":
+            void()
+        else:
+            print("Invalid command "+sys.argv[0]+", try "+blue("clay help", ['bold']))
+    except KeyboardInterrupt:
+        sys.exit(red("\n\nExiting clay", ['bold']))
+    else:
+        main()

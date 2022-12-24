@@ -22,7 +22,7 @@ void send(std::string name, std::string dt = "None"){
     std::ofstream file2("Runlogs.json");
     file2 << data;
 }
-std::string recieve(){
+void recieve(){
     // return the last value in Runlogs.json and remove it
     json data;
     std::ifstream file("Runlogs.json");
