@@ -45,12 +45,17 @@ python, lua, ruby, swift, javascript, typescript, c, c++, c#, java, go, rust, ko
 - choco (windows only)
 - brew (darwin/macOS only)
 - Visual Studio (Windows only)
-## Install
+## Install with clay
+If you already have a working version of clay, you can download the code and run
+```bash
+clay run sbuild
+```
+now you have a working clay program.
+## Install with python
 Head over to releases and download clay.
 ## Build
 - Download the clay source using ```git clone```
-- Run ```python clay.py``` or ```python3 clay.py``` to open the terminal, you can write commands from here but it is reccomended to build it.
-- Run ```sbuild``` in the terminal
+- Run ```python clay.py sbuild``` or ```python3 clay.py sbuild``` to build clay.
 - Wait for it to download, it may ask for your password
 - Clay is ready for usage! 
 ## Embed into python
