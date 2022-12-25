@@ -1,3 +1,0 @@
-module Other where
-
-bar = ()

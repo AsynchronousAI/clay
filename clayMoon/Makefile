@@ -1,4 +1,4 @@
-LUA ?= lua5.1
+LUA ?= lua
 LUA_VERSION = $(shell $(LUA) -e 'print(_VERSION:match("%d%.%d"))')
 LUAROCKS = luarocks --lua-version=$(LUA_VERSION)
 LUA_PATH_MAKE = $(shell $(LUAROCKS) path --lr-path);./?.lua;./?/init.lua

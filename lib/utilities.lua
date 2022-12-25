@@ -1,11 +1,14 @@
 local ml = {_IMPORTED = {"home"}, _VERSION = "0.1.0"}
-
+local function x()
 function ml.install(file)
     table.insert(ml._IMPORTED, file)
     build()
 end
 
 function ml.uninstall(file)
+    if file == "home" then
+        error("Cannot uninstall home")
+    end
     for i, v in ipairs(ml._IMPORTED) do
         if v == file then
             table.remove(ml._IMPORTED, i)
@@ -1022,3 +1025,26 @@ ml.Array = Array
 _G.util = ml
 
 return ml
+end
+
+
+
+utilites = ml
+local v = x()
+
+
+-- add two tables
+local function add(t1, t2)
+    local t3 = {}
+    for k, v in pairs(t1) do
+        t3[k] = v
+    end
+    for k, v in pairs(t2) do
+        t3[k] = v
+    end
+    return t3
+end
+
+utilities = add(utilities, v)
+
+

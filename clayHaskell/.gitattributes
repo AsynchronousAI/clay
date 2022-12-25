@@ -1,4 +1,0 @@
-# convert CRLF into LF on checkin
-# don't convert anything on checkout
-* text=auto eol=lf
-mk/win32-tarballs.md5sum text=auto eol=LF

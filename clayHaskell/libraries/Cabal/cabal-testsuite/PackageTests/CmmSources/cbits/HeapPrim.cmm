@@ -1,6 +1,0 @@
-#include "Cmm.h"
-
-aToMyWordzh (P_ clos)
-{
-    return (clos);
-}

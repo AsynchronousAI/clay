@@ -1,3 +1,0 @@
-# cabal-benchmarks
-
-TBW

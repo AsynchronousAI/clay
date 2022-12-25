@@ -68,18 +68,14 @@ def execute(script):
         runCpp(script)
     elif script.endswith(".cs"):
         runCS(script)
-    elif script.endswith(".java"):
-        runJava(script)
     elif script.endswith(".go"):
         runGo(script)
     elif script.endswith(".rs"):
         runRust(script)
-    elif script.endswith(".kt"):
-        runKotlin(script)
-    elif script.endswith(".php"):
-        runPHP(script)
     elif script.endswith(".dart"):
         runDart(script)
+    elif script.endswith(".moon"):
+        runMoon(script)
     else:
         print("Unsupported file type. Supported file types are: Python, Lua, Ruby, Swift, JavaScript, TypeScript, C, C++, C#, Java, Go, Rust, Kotlin, PHP, and Dart.")
         return
@@ -116,8 +112,8 @@ def buildSelf():
 
 def buildJS():
     if utilExists("bun") == False:
-        print("Bun.js (clay edition) is not installed. Installing...")
-        # build ./clayJS
+        print("JS (clay edition) is not installed. Installing...")
+        os.system("curl -fsSL https://bun.sh/install | bash")
 def buildLua():
     if utilExists("luajit") == False:
         print("Lua (clay edition) is not installed. Installing...")
@@ -156,7 +152,6 @@ def buildPython():
             return False
         print(magenta("\nSuccessfully installed Python (clay edition)!\n\n\n"))
     return True
-
 def buildRust():
     # At this time rust does not have a clay edition, so we will just install rust
     if utilExists("rustc") == False:
@@ -229,6 +224,39 @@ def buildRust():
 
             print(red("\nFailed to install Rust (clay edition).\n\n\n"))
             '''
+def buildMoon():
+    if utilExists("moonc") == False:
+        print("Moonscript is not installed. Installing...")
+        if sys.platform == "win32":
+            print("Moonscript is not supported on windows.")
+            return False
+        if utilExists("luarocks") == False:
+            print("Luarocks is not installed. Installing...")
+            if sys.platform == "darwin":
+                if utilExists("brew") == False:
+                    print("Brew is not installed. Installing...")
+                    status = runCommand("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\"")
+                    if status != 0:
+                        print(red("\n\nFailed to install brew. Error code: "+str(status)+"\n\n", ["bold"]))
+                        return False
+                status = runCommand("brew install luarocks")
+                if status != 0:
+                    print(red("\n\nFailed to install luarocks. Error code: "+str(status)+"\n\n", ["bold"]))
+                    return False
+            if sys.platform == "linux":
+                if utilExists("apt") == False:
+                    print(red("\n\nFailed to install luarocks. apt is not installed", ["bold"]))
+                    return False
+                runCommand("sudo apt install luarocks")
+        if sys.platform == "darwin" or sys.platform == "linux":
+            status = runCommand("sudo luarocks install moonscript")
+        else:
+            status = runcommand("luarocks install moonscript")
+        if status != 0:
+            print(red("\n\nFailed to install moonscript. Error code: "+str(status)+"\n\n", ["bold"]))
+            return False
+        return True
+    return True
 # languages
 def runPython(scriptPath):
     print(yellow("Warning:", ["bold"])+" "+yellow("The following python script might take a while to compile. The clay team is currently working on a fix for this."))
@@ -265,6 +293,24 @@ def runLua(scriptPath):
     runCommand("luajit "+scriptPath+" -b "+scriptPath.replace(".lua", ".o"), True)
     with open(scriptPath, 'w') as f:
         f.write(orig)
+def runMoon(scriptPath):
+    x = buildMoon()
+    if x == False:
+        return
+    os.chdir(path)
+
+    # generate the lua file
+    runCommand("moonc "+scriptPath, True)
+    # dist
+    if os.path.exists("dist") == False:
+        os.mkdir("dist")
+    # check if a folder under the name of the filename exists
+    if os.path.exists("dist/"+scriptPath.replace(".moon", "")) == False:
+        os.mkdir("dist/"+scriptPath.replace(".moon", ""))
+    else:
+        print(red("\n\nTwo scripts have the same name, this can lead to unexpected behavior.\n\n", ["bold"]))
+    # move the file to the folder
+    shutil.move(scriptPath.replace(".moon", ".lua"), "dist/"+scriptPath.replace(".moon", ""))
 
 def runRuby(scriptPath):
     if utilExists("ruby") == False:
@@ -695,7 +741,6 @@ def remove(nm):
             f.write(json.dumps(dataTable))
 
     main()
-
 def new():
     cwd = os.getcwd()
     name = input("Project name (identifier for your project): ")
@@ -843,10 +888,10 @@ def publish():
         os.system("gh repo view "+dataTable['name']+" --homepage")
         os.system("gh repo view "+dataTable['name']+" --description")
         os.system("gh repo view "+dataTable['name']+" --created")
-        os.system("gh repo view "+dataTable['name']+" --pushed")
-                                         
-def shell():
-    lang = input("Language: ")
+        os.system("gh repo view "+dataTable['name']+" --pushed")                                         
+def shell(lang):
+    if lang == "":
+        lang = input("Language: ")
 
     print("Click "+blue("CTRL+C", ['bold'])+" to exit the shell. Or you can terminate the terminal.")
     print("The shell lets you use the original version of the language, Not with the clay additions.")
@@ -1048,29 +1093,38 @@ def run():
 def compile():
     # TODO: Setup compiler
     pass
-
-def install():
+def install(name, technique):
+    # if dependencies folder doesnt exist, create it
+    if not os.path.exists("dependencies"):
+        os.mkdir("dependencies")
     if exists("project.json") == True:
-        technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
+        if technique == "":
+            technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
         if technique == "npm":
-            if utilExists("clayJS") == False:
-                print("ClayJS is not installed. Installing...")
+            if utilExists("bun") == False:
+                print("JS (clay edition) is not installed. Installing...")
                 buildJS()
-
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "npm")
             print("Installing "+name+"...")
-            os.system("clayJS install "+name+" --prefix dependencies")
+            os.system("bun install "+name)
 
-            os.remove("dependencies/project.json")
-            os.remove("dependencies/package-lock.json")
+            if exists("package.json") == True:
+                os.remove("package.json")
+            if exists("package-lock.json") == True:
+                os.remove("package-lock.json")
+            if exists("bun.lock") == True:
+                os.remove("bun.lock")
+            if exists("bun.lockb") == True:
+                os.remove("bun.lockb")
 
             # rather than keeping the items in node_modules, we will keep the items in dependencies and delete the node_modules folder
             # move the items in node_modules to dependencies
-            os.system("mv dependencies/node_modules/* dependencies")
+            os.system("mv node_modules/* dependencies")
 
             # delete node_modules
-            shutil.rmtree("dependencies/node_modules")
+            shutil.rmtree("node_modules")
 
             #with open('project.json', 'w') as f:
             #    x = open("project.json", "r")
@@ -1099,7 +1153,8 @@ def install():
                         print("git is not installed, and clay cannot install it for you. Please install it manually.")
                         return
 
-            url = input("Git URL: ")
+            if not name:
+                url = input("Git URL: ")
             add(url, "git")
             print("Installing "+url+"...")
             os.system("git clone "+url+" dependencies/"+url.split("/")[-1])
@@ -1108,7 +1163,8 @@ def install():
             #    x = open("project.json", "r")
             #    f.write(json.dumps(json.load(x).dependencies.append("git:"+url)))
         elif technique == "url":
-            url = input("URL: ")
+            if not name:
+                url = input("URL: ")
             add(url, "url")
             print("Installing "+url+"...")
             os.system("curl "+url+" > dependencies/"+url.split("/")[-1])
@@ -1140,7 +1196,8 @@ def install():
                         print("luarocks is not installed, and clay cannot install it for you. Please install it manually.")
                         return
 
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "luaRocks")
             print("Installing "+name+"...")
             os.system("luarocks install "+name+" --tree=dependencies/"+name)
@@ -1174,7 +1231,8 @@ def install():
                         print("pip is not installed, and clay cannot install it for you. Please install it manually.")
                         return
         
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "pip")
             print("Installing "+name+"...")
             os.system("pip install "+name+" --target dependencies/"+name)
@@ -1206,7 +1264,8 @@ def install():
                         print("gem is not installed, and clay cannot install it for you. Please install it manually.")
                         return
 
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "gem")
             print("Installing "+name+"...")
             os.system("gem install "+name+" --install-dir dependencies/"+name)
@@ -1237,7 +1296,8 @@ def install():
                     else:
                         print("cargo is not installed, and clay cannot install it for you. Please install it manually.")
                         return
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "cargo")
             print("Installing "+name+"...")
             os.system("cargo install "+name+" --root dependencies/"+name)
@@ -1268,7 +1328,8 @@ def install():
                     else:
                         print("go is not installed, and clay cannot install it for you. Please install it manually.")
                         return
-            name = input("Package name: ")
+            if not name:
+                name = input("Package name: ")
             add(name, "go")
             print("Installing "+name+"...")
             os.system("go get "+name+" dependencies/"+name)
@@ -1444,7 +1505,14 @@ def terminal():
 
 if __name__ == "__main__":
     try:
-        if sys.argv[1] == "terminal":
+        # if sys.argv is nil then run help
+        if len(sys.argv) <= 0:
+            help()
+        elif sys.argv[1] == "--version":
+            version()
+        elif sys.argv[1] == "help":
+            help()
+        elif sys.argv[1] == "terminal":
             if terminall == False:
                 print("Use "+blue("clay help", ['bold'])+" to get started, or "+blue("clay exit", ['bold'])+" to exit the clay terminal.")
             terminall = True
@@ -1460,7 +1528,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == "run":
             run()
         elif sys.argv[1] == "install":
-            install()
+            install(sys.argv[2], sys.argv[3])
         elif sys.argv[1] == "uninstall":
             uninstall()
         elif sys.argv[1] == "list":
@@ -1483,5 +1551,3 @@ if __name__ == "__main__":
             print("Invalid command "+sys.argv[0]+", try "+blue("clay help", ['bold']))
     except KeyboardInterrupt:
         sys.exit(red("\n\nExiting clay", ['bold']))
-    else:
-        main()
