@@ -20,6 +20,8 @@ commands = []
 runInstall = True
 path = os.getcwd()
 # colors
+def black(text, styles = []):
+    return color(text, 30, styles)
 def red(text, styles = []):
     return color(text, 31, styles)
 def green(text, styles = []):
@@ -47,38 +49,142 @@ def color(text, color, styles = []):
             style += "8;"
     return "\033["+style+str(color)+"m"+text+"\033[0m"
 # run functions
-def execute(script):
-    print(magenta("Compiling "+script+"...\n\n"))
+def mutate(files):
+    # take in files which is a list of paths to executable files
+    # compile all files into one file
 
-    if script.endswith(".py"):
-        runPython(script)
-    elif script.endswith(".lua"):
-        runLua(script)
-    elif script.endswith(".rb"):
-        runRuby(script)
-    elif script.endswith(".swift"):
-        runSwift(script)
-    elif script.endswith(".js"):
-        runJS(script)
-    elif script.endswith(".ts"):
-        runJS(script)
-    elif script.endswith(".c"):
-        runC(script)
-    elif script.endswith(".cpp"):
-        runCpp(script)
-    elif script.endswith(".cs"):
-        runCS(script)
-    elif script.endswith(".go"):
-        runGo(script)
-    elif script.endswith(".rs"):
-        runRust(script)
-    elif script.endswith(".dart"):
-        runDart(script)
-    elif script.endswith(".moon"):
-        runMoon(script)
-    else:
-        print("Unsupported file type. Supported file types are: Python, Lua, Ruby, Swift, JavaScript, TypeScript, C, C++, C#, Java, Go, Rust, Kotlin, PHP, and Dart.")
+    # create a new file
+    pass
+def execute(script):
+    def makeInstall(util, win, darwin, linux):
+        def val():
+            if utilExists(util) == False:
+                # Check operating system
+                if sys.platform == "win32":
+                    # Check if they have choclatey installed
+                    if utilExists("choco") == True:
+                        runCommand("choco install "+win)
+                    else:
+                        print("choco missing")
+                elif sys.platform == "linux":
+                    # Check if they have apt installed
+                    if utilExists("apt") == True:
+                        runCommand("sudo apt install "+linux)
+                    else:
+                        print("apt missing")
+                elif sys.platform == "darwin":
+                    # Check if they have brew installed
+                    if utilExists("brew") == True:
+                        runCommand("brew install "+darwin)
+                    else:
+                        print("brew missing")
+                else:
+                    print("We couldn't detect your operating system.")
+        return val
+
+    languages = {
+        "python": {
+            "name": "python",
+            "extension": ".py",
+            "command": "python @file @args",
+            "install": makeInstall("python", "python", "python", "python")
+        },
+        "php": {
+            "name": "php",
+            "extension": ".php",
+            "command": "php @file @args",
+            "install": makeInstall("php", "php", "php", "php")
+        },
+        "javascript": {
+            "name": "javascript",
+            "extension": ".js",
+            "command": "node @file @args",
+            "install": makeInstall("node", "nodejs", "node", "nodejs")
+        },
+        "java": {
+            "name": "java",
+            "extension": ".java",
+            "command": "java @file @args",
+            "install": makeInstall("java", "java", "java", "java")
+        },
+        "c": {
+            "name": "c",
+            "extension": ".c",
+            "command": "gcc @file -o @file.out && @file.out @args",
+            "install": makeInstall("gcc", "gcc", "gcc", "gcc")
+        },
+        "c++": {
+            "name": "c++",
+            "extension": ".cpp",
+            "command": "g++ @file -o @file.out && @file.out @args",
+            "install": makeInstall("g++", "g++", "g++", "g++")
+        },
+        "c#": {
+            "name": "c#",
+            "extension": ".cs",
+            "command": "csc @file && @file.exe @args",
+            "install": makeInstall("csc", "csc", "csc", "csc")
+        },
+        "go": {
+            "name": "go",
+            "extension": ".go",
+            "command": "go run @file @args",
+            "install": makeInstall("go", "go", "go", "go")
+        },
+        "ruby": {
+            "name": "ruby",
+            "extension": ".rb",
+            "command": "ruby @file @args",
+            "install": makeInstall("ruby", "ruby", "ruby", "ruby")
+        },
+        "swift": {
+            "name": "swift",
+            "extension": ".swift",
+            "command": "swift @file @args",
+            "install": makeInstall("swift", "swift", "swift", "swift")
+        },
+        "kotlin": {
+            "name": "kotlin",
+            "extension": ".kt",
+            "command": "kotlinc @file -include-runtime -d @file.jar && java -jar @file.jar @args",
+            "install": makeInstall("kotlinc", "kotlin", "kotlin", "kotlin")
+        },
+        "rust": {
+            "name": "rust",
+            "extension": ".rs",
+            "command": "rustc @file && @file @args",
+            "install": makeInstall("rustc", "rust", "rust", "rust")
+        },
+        "lua": {
+            "name": "lua",
+            "extension": ".lua",
+            "command": "lua @file @args",
+            "install": makeInstall("lua", "lua", "lua", "lua")
+        },
+        
+
+    }
+
+    # check if the script is a file
+    if os.path.isfile(script) == False:
+        print(red("Script not found."))
         return
+    # check if the script is a valid extension
+    extension = os.path.splitext(script)[1]
+    language = None
+    for lang in languages:
+        if lang["extension"] == extension:
+            language = lang
+            break
+    if language == None:
+        print(red("Invalid script extension."))
+        return
+    # check if the language is installed
+    if utilExists(language["name"]) == False:
+        print("Language not installed. Installing...")
+        language["install"]()
+    # run the script
+    runCommand(language["command"].replace("@file", script).replace("@args", " ".join(sys.argv[2:])), True)
 def utilExists(name):
     return find_executable(name) is not None
 def runCommand(command, isRun = False):
@@ -89,576 +195,6 @@ def runCommand(command, isRun = False):
             print(red("\n\nFailed to run script. Error code: "+str(status)+"\n\n", ["bold"]))
 
     return status
-# build
-def buildAll():
-    buildPython()
-    buildLua()
-    #buildRuby()
-    #buildSwift()
-    buildJS()
-    #buildC()
-    #buildCpp()
-    #buildCS()
-    #buildJava()
-    #buildGo()
-    buildRust()
-    #buildKotlin()
-    #buildPHP()
-    #buildDart()
-    pass
-def buildSelf():
-    # compile clay.py 
-    pass
-
-def buildJS():
-    if utilExists("bun") == False:
-        print("JS (clay edition) is not installed. Installing...")
-        os.system("curl -fsSL https://bun.sh/install | bash")
-def buildLua():
-    if utilExists("luajit") == False:
-        print("Lua (clay edition) is not installed. Installing...")
-        # build ./clayLua
-        if utilExists("make") == False:
-            print("Make is required to install Lua (clay edition).")
-        else:
-            # cd ./clayLua
-            os.chdir("./clayLua")
-            if sys.platform == "darwin":
-                osx = (platform.uname().release).rsplit('.', 1)[0]
-                status = runCommand("MACOSX_DEPLOYMENT_TARGET="+osx+" make && sudo make install")   
-            else:
-                status = runCommand("make && sudo make install")
-            
-            if status == 0:      
-                status = runCommand("sudo make install")
-                if status == 0:
-                    status = runCommand("ln -sf luajit-2.1.0-beta3 /usr/local/bin/luajit")
-                    if status == 0:
-                        print(magenta("\nSuccessfully installed Lua (clay edition)!\n\n\n"))
-                        return True
-        print(red("\n\nFailed to install Lua (clay edition).\n Exit status: "+str(status)+"\n\n", ["bold"]))
-        print(yellow("help: this may be because your platform is not supported. get more help at https://AsynchronousAI.github.io/clay/forum\n\n"))
-        os.chdir(path)
-        return False
-def buildPython():
-    if utilExists("pyinstaller") == False:
-        if utilExists("pip") == False:
-            print(red("\n\nPip is required to run this command.\n\n", ["bold"]))
-            return False
-        print(magenta("Python (clay edition) is not installed. Installing...", ["bold"]))
-        status = runCommand("pip install pyinstaller")
-        if status != 0:
-            print(red("\n\nFailed to install Python (clay edition). Error code: "+str(status)+"\n\n", ["bold"]))
-            return False
-        print(magenta("\nSuccessfully installed Python (clay edition)!\n\n\n"))
-    return True
-def buildRust():
-    # At this time rust does not have a clay edition, so we will just install rust
-    if utilExists("rustc") == False:
-        if sys.platform == "darwin":
-            print("Rust is not installed. Installing...")
-            if utilExists("brew") == False:
-                print("Brew is not installed. Installing...")
-                status = runCommand("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\"")
-                if status != 0:
-                    print(red("\n\nFailed to install brew. Error code: "+str(status)+"\n\n", ["bold"]))
-                    return False
-            status = runCommand("brew install rust")
-            if status != 0:
-                print(red("\n\nFailed to install rust. Error code: "+str(status)+"\n\n", ["bold"]))
-                return False
-        if sys.platform == "linux":
-            print("Rust is not installed. Installing...")
-            if utilExists("apt") == False:
-                print(red("\n\nFailed to install rust. apt is not installed", ["bold"]))
-                return False
-            runCommand("sudo apt install rustc")
-
-        if sys.platform == "win32":
-            print("Rust is not installed. Installing...")
-            if utilExists("choco") == False:
-                print("Chocolatey is not installed. Installing...")
-                status = runCommand("powershell.exe -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\"")
-                if status != 0:
-                    print(red("\n\nFailed to install chocolatey. Error code: "+str(status)+"\n\n", ["bold"]))
-                    return False
-            runCommand("choco install rust")
-        return True
-    '''
-    if utilExists("rustc") == False:
-        print("Rust is not installed. Installing...")
-        
-        # build ./clayRust
-        if utilExists("make") == False:
-            print("Make is required to install Rust.")
-        else:
-            # cd ./clayRust
-            os.chdir("./clayRust")
-            os.system("./configure")
-            runCommand("make")          
-
-            # find a directory in clayRust/build/ that has a file that starts with stage
-            for root, dirs, files in os.walk("./build"):
-                for file in files:
-                    if file.startswith("stage") and os.path.exists("./build/"+file+"/bin"):
-                        # move items from clayRust/build/stage1/bin to /usr/local/bin
-                        # make sure file has a bin folder
-                        if sys.platform == "win32":
-                            # move files to windows equivelent of bin
-                            os.chdir("./build/"+file+"/bin")
-                            shutil.move("rustc.exe", "C:/Windows/System32")
-                            shutil.move("rustdoc.exe", "C:/Windows/System32")
-                            shutil.move("rust-gdb.exe", "C:/Windows/System32")
-                            shutil.move("rust-lldb.exe", "C:/Windows/System32")
-                            shutil.move("rustup.exe", "C:/Windows/System32")
-                            return
-                        os.chdir("./build/"+file+"/bin")
-                        shutil.move("rustc", "/usr/local/bin")
-                        shutil.move("rustdoc", "/usr/local/bin")
-                        shutil.move("rust-gdb", "/usr/local/bin")
-                        shutil.move("rust-lldb", "/usr/local/bin")
-                        shutil.move("rustup", "/usr/local/bin")
-
-                        print(magenta("\nSuccessfully installed Rust (clay edition).\n\n\n"))
-                        return
-
-            print(red("\nFailed to install Rust (clay edition).\n\n\n"))
-            '''
-def buildMoon():
-    if utilExists("moonc") == False:
-        print("Moonscript is not installed. Installing...")
-        if sys.platform == "win32":
-            print("Moonscript is not supported on windows.")
-            return False
-        if utilExists("luarocks") == False:
-            print("Luarocks is not installed. Installing...")
-            if sys.platform == "darwin":
-                if utilExists("brew") == False:
-                    print("Brew is not installed. Installing...")
-                    status = runCommand("/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\"")
-                    if status != 0:
-                        print(red("\n\nFailed to install brew. Error code: "+str(status)+"\n\n", ["bold"]))
-                        return False
-                status = runCommand("brew install luarocks")
-                if status != 0:
-                    print(red("\n\nFailed to install luarocks. Error code: "+str(status)+"\n\n", ["bold"]))
-                    return False
-            if sys.platform == "linux":
-                if utilExists("apt") == False:
-                    print(red("\n\nFailed to install luarocks. apt is not installed", ["bold"]))
-                    return False
-                runCommand("sudo apt install luarocks")
-        if sys.platform == "darwin" or sys.platform == "linux":
-            status = runCommand("sudo luarocks install moonscript")
-        else:
-            status = runcommand("luarocks install moonscript")
-        if status != 0:
-            print(red("\n\nFailed to install moonscript. Error code: "+str(status)+"\n\n", ["bold"]))
-            return False
-        return True
-    return True
-# languages
-def runPython(scriptPath):
-    print(yellow("Warning:", ["bold"])+" "+yellow("The following python script might take a while to compile. The clay team is currently working on a fix for this."))
-    x = buildPython()
-    if x == False:
-        return
-
-    os.chdir(path)
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("from clayForPython import *") == False:
-        script = "from clayForPython import *\n"+script
-
-    # use the exec function to run the script, ex: exec(open('file.py').read())
-    script = "from clayForPython import *\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("pyinstaller "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runLua(scriptPath):
-    x = buildLua()
-    if x == False:
-        return
-    os.chdir(path)
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForLua')") == False:
-        script = "require('clayForLua')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("luajit "+scriptPath+" -b "+scriptPath.replace(".lua", ".o"), True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runMoon(scriptPath):
-    x = buildMoon()
-    if x == False:
-        return
-    os.chdir(path)
-
-    # generate the lua file
-    runCommand("moonc "+scriptPath, True)
-    # dist
-    if os.path.exists("dist") == False:
-        os.mkdir("dist")
-    # check if a folder under the name of the filename exists
-    if os.path.exists("dist/"+scriptPath.replace(".moon", "")) == False:
-        os.mkdir("dist/"+scriptPath.replace(".moon", ""))
-    else:
-        print(red("\n\nTwo scripts have the same name, this can lead to unexpected behavior.\n\n", ["bold"]))
-    # move the file to the folder
-    shutil.move(scriptPath.replace(".moon", ".lua"), "dist/"+scriptPath.replace(".moon", ""))
-
-def runRuby(scriptPath):
-    if utilExists("ruby") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install ruby")
-            else:
-                print("Ruby is required to run this script. You can install it from https://ruby.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install ruby")
-            else:
-                print("Ruby is required to run this script. You can install it from https://ruby.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install ruby")
-            else:
-                print("Ruby is required to run this script. You can install it from https://ruby.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Ruby is required to run this script. You can install it from https://ruby.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForRuby')") == False:
-        script = "require('clayForRuby')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("ruby "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runSwift(scriptPath):
-    if utilExists("swift") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install swift")
-            else:
-                print("Swift is required to run this script. You can install it from https://swift.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install swift")
-            else:
-                print("Swift is required to run this script. You can install it from https://swift.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install swift")
-            else:
-                print("Swift is required to run this script. You can install it from https://swift.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Swift is required to run this script. You can install it from https://swift.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForSwift')") == False:
-        script = "require('clayForSwift')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("swift "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runC(scriptPath):
-    if utilExists("gcc") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need brew.")
-        else:
-            print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("#include <clayForC.h>") == False:
-        script = "#include <clayForC.h>\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("gcc "+scriptPath, True)
-    runCommand("./a.out")
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runKotlin(scriptPath):
-    if utilExists("kotlinc") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install kotlin")
-            else:
-                print("Kotlin is required to run this script. You can install it from https://kotlinlang.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install kotlin")
-            else:
-                print("Kotlin is required to run this script. You can install it from https://kotlinlang.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install kotlin")
-            else:
-                print("Kotlin is required to run this script. You can install it from https://kotlinlang.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Kotlin is required to run this script. You can install it from https://kotlinlang.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForKotlin')") == False:
-        script = "require('clayForKotlin')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("kotlinc "+scriptPath, True)
-    runCommand("kotlin "+scriptPath.replace(".kt", ""))
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runJava(scriptPath):
-    if utilExists("javac") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install java")
-            else:
-                print("Java is required to run this script. You can install it from https://java.com, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install java")
-            else:
-                print("Java is required to run this script. You can install it from https://java.com, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install java")
-            else:
-                print("Java is required to run this script. You can install it from https://java.com, We tried to install it for you, but you need brew.")
-        else:
-            print("Java is required to run this script. You can install it from https://java.com, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForJava')") == False:
-        script = "require('clayForJava')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("javac "+scriptPath, True)
-    runCommand("java "+scriptPath.replace(".java", ""))
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runCpp(scriptPath):
-    if utilExists("g++") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install gcc")
-            else:
-                print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but you need brew.")
-        else:
-            print("GCC is required to run this script. You can install it from https://gcc.gnu.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForCpp')") == False:
-        script = "require('clayForCpp')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("g++ "+scriptPath, True)
-    runCommand("./a.out")
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runCS(scriptPath):
-    if utilExists("csc") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install csc")
-            else:
-                print("C# is required to run this script. You can install it from https://dotnet.microsoft.com, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install csc")
-            else:
-                print("C# is required to run this script. You can install it from https://dotnet.microsoft.com, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install csc")
-            else:
-                print("C# is required to run this script. You can install it from https://dotnet.microsoft.com, We tried to install it for you, but you need brew.")
-        else:
-            print("C# is required to run this script. You can install it from https://dotnet.microsoft.com, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForCsharp')") == False:
-        script = "require('clayForCsharp')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("csc "+scriptPath, True)
-    runCommand("mono "+scriptPath.replace(".cs", ""), True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runRust(scriptPath):
-    x = buildRust()
-    if x == False:
-        return
-    os.chdir(path)
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("mod clayForRust;") == False:
-        script = "mod clayForRust;\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    # if a file is found ith the name scriptPath.replace(".rs", "")
-    runCommand("rustc "+scriptPath, True) 
-    # run "./" combined with the file name if on mac or linux but on windows run the "./" combined with the file nme but .rs is replaced with .exe
-    # check if dist folder exists
-    if os.path.exists("dist") == False:
-        os.mkdir("dist")
-    # check if a folder under the name of the filename exists
-    if os.path.exists("dist/"+scriptPath.replace(".rs", "")) == False:
-        os.mkdir("dist/"+scriptPath.replace(".rs", ""))
-    else:
-        print(red("\n\nTwo scripts have the same name, this can lead to unexpected behavior.\n\n", ["bold"]))
-    # move the file to the folder
-    shutil.move(scriptPath.replace(".rs", ""), "dist/"+scriptPath.replace(".rs", ""))
-
-
-    os.chdir(path)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runJS(scriptPath):
-    x = buildJS()
-    if x == False:
-        return
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForJS')") == False:
-        script = "require('clayForJS')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("bun run "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runDart(scriptPath):
-    if utilExists("dart") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install dart")
-            else:
-                print("Dart is required to run this script. You can install it from https://dart.dev, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install dart")
-            else:
-                print("Dart is required to run this script. You can install it from https://dart.dev, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install dart")
-            else:
-                print("Dart is required to run this script. You can install it from https://dart.dev, We tried to install it for you, but you need brew.")
-        else:
-            print("Dart is required to run this script. You can install it from https://dart.dev, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForDart')") == False:
-        script = "require('clayForDart')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("dart "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runGo(scriptPath):
-    if utilExists("go") == False:
-        # Check operating system
-        if sys.platform == "win32":
-            # Check if they have choclatey installed
-            if utilExists("choco") == True:
-                runCommand("choco install golang")
-            else:
-                print("Go is required to run this script. You can install it from https://golang.org, We tried to install it for you, but you need choco.")
-        elif sys.platform == "linux":
-            # Check if they have apt installed
-            if utilExists("apt") == True:
-                runCommand("sudo apt install golang")
-            else:
-                print("Go is required to run this script. You can install it from https://golang.org, We tried to install it for you, but you need apt.")
-        elif sys.platform == "darwin":
-            # Check if they have brew installed
-            if utilExists("brew") == True:
-                runCommand("brew install golang")
-            else:
-                print("Go is required to run this script. You can install it from https://golang.org, We tried to install it for you, but you need brew.")
-        else:
-            print("Go is required to run this script. You can install it from https://golang.org, We tried to install it for you, but we couldn't detect your operating system.")
-    with open(scriptPath, 'r') as f:
-          script = f.read()
-    orig = script
-    if script.startswith("require('clayForGo')") == False:
-        script = "require('clayForGo')\n"+script
-    with open(scriptPath, 'w') as f:
-        f.write(script)
-    runCommand("go run "+scriptPath, True)
-    with open(scriptPath, 'w') as f:
-        f.write(orig)
-def runPHP(scriptPath):
     if utilExists("php") == False:
         # Check operating system
         if sys.platform == "win32":
@@ -999,94 +535,9 @@ def run():
         global threadsrunning 
         threadsrunning = 0
 
-        print(magenta("\nCompiling scripts...\n\n(This process is only done during development, upon release the scripts will be compiled and ready to run)\n", ["bold"]))
-        for i in range(0, len(package["files"])):
-            print(i)
-            if package["files"][i] == "Runlogs.json":
-                print(red("\nError: Runlogs.json is a reserved file name. Please rename it.\n", ["bold"]))
-                return
-            elif package["files"][i] == "project.json":
-                print(red("\nError: project.json is a reserved file name. Please rename it.\n", ["bold"]))
-                return
-            else:
-                execute(package["files"][i]) # compile scripts
-        # check if any files have the same name as eachother, if so then output an error
-        files = os.listdir()
-        for file in files:
-            if file:
-                if files.count(file) > 1:
-                    print(red("\nError: Multiple files with the same name.\n", ["bold"]))
-                    return
-
-        # compile scripts
-
-        def onChange(data):
-                # convert data to a table
-            if data:
-                data = json.loads(data)
-                if len(data["requests"]) == 0:
-                    return
-                # get last value of requests
-                last = data["requests"][len(data["requests"])-1]
-
-                if last == "void":
-                    return
-                execute(last) # compile just incase
-                if sys.platform == "win32":
-                    os.system("start dist/"+last.split(".")[0]+"/"+last.split(".")[0]+".exe")
-                    return
-                os.system("./dist/"+last.split(".")[0]+"/"+last.split(".")[0])
-            
-
-
-
-            
-        # 1,000 lines!!! (I'm not joking)
-
-        def routine():
-            last = ""
-            threadsrunning = 0
-            while threadrunning == True:
-                # check if Runlogs.json exists
-                if exists("Runlogs.json") == False:
-                    # wait until it exists
-                    while exists("Runlogs.json") == False:
-                        pass
-
-                os.chdir(path)
-                with open("Runlogs.json", "r") as file:
-                   data = (file.read())
-                if data == last:
-                    pass
-                else:
-                    threadsrunning += 1
-                    thread = threading.Thread(target=onChange, args=(data,))
-                    thread.start()
-                    # wait for thread to finish
-                    thread.join()
-                    threadsrunning -= 1
-                last = data
-
-        thread = threading.Thread(target=routine)
-        thread.start()
-        if exists(script) == True:
-            execute(script)# compile just incase
-            if sys.platform == "win32":
-                os.system("start dist/"+script.split(".")[0]+"/"+script.split(".")[0]+".exe")
-                return
-            os.system("./dist/"+script.split(".")[0]+"/"+script.split(".")[0])
-            
-
-        else:
-            print("Script not found. Try running "+blue("clay new", ['bold'])+" again to reconfigure.")
-
-        if threadsrunning > 0:
-            while threadsrunning > 0:
-                pass
-        threadrunning = False
-        threadsrunning = 0
-        sleep(0.5)
-        os.remove("Runlogs.json")
+        # execute() main script
+        print(magenta("Running "+script+"...", ['bold']))
+        execute(script)
     else:
         print("No project found, try running "+blue("clay new", ['bold'])+" first.")
     main()
@@ -1101,14 +552,13 @@ def install(name, technique):
         if technique == "":
             technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
         if technique == "npm":
-            if utilExists("bun") == False:
-                print("JS (clay edition) is not installed. Installing...")
-                buildJS()
+            if utilExists("npm") == False:
+                print("npm is required to install this package. You can install it from https://npmjs.com, We tried to install it for you, but this version of clay doesn't have npm support yet.")
             if not name:
                 name = input("Package name: ")
             add(name, "npm")
             print("Installing "+name+"...")
-            os.system("bun install "+name)
+            os.system("npm install "+name)
 
             if exists("package.json") == True:
                 os.remove("package.json")
@@ -1506,7 +956,7 @@ def terminal():
 if __name__ == "__main__":
     try:
         # if sys.argv is nil then run help
-        if len(sys.argv) <= 0:
+        if len(sys.argv) < 2:
             help()
         elif sys.argv[1] == "--version":
             version()

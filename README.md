@@ -169,4 +169,3 @@ client.run('token')
 Add the following and test the script.
 
 You should get a discord bot that when you write "ping" it will reply "pong".
-
