@@ -1,21 +1,18 @@
-local ml = {_IMPORTED = {"home"}, _VERSION = "0.1.0"}
+local ml = {_IMPORTED = {"home", "--system"}, _VERSION = "0.1.0"}
 local function x()
 function ml.install(file)
     table.insert(ml._IMPORTED, file)
-    build()
+    ml.build()
 end
 
 function ml.uninstall(file)
-    if file == "home" then
-        error("Cannot uninstall home")
-    end
     for i, v in ipairs(ml._IMPORTED) do
         if v == file then
             table.remove(ml._IMPORTED, i)
             return
         end
     end
-    build()
+    ml.build()
 end
 
 function ml.isInstalled(file)

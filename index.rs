@@ -1,14 +1,9 @@
-mod clayForRust;
 fn main(){
-    for i in 1..12 {
-        for y in 1..12 {
-            let len = (i * y).to_string().len();
-            let space = 4 - len;
-            for _ in 0..space {
-                print!(" ");
-            }
-            print!("{}".concat(space), i * y)
+    // print a multiplication table with 10 rows and 10 columns and all of the numbers are aligned to the right
+    for i in 1..10001{
+        for j in 1..10001{
+            print!("{:>4}", i*j);
         }
-        println!("")
+        println!();
     }
 }

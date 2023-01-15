@@ -81,85 +81,159 @@ def execute(script):
                 else:
                     print("We couldn't detect your operating system.")
         return val
-
+    if sys.platform == "win32":
+        fileRun = "start @xfile.exe && del @xfile.exe"
+    else:
+        fileRun = "./@xfile && rm @xfile"
     languages = {
-        "python": {
+        1: {
             "name": "python",
             "extension": ".py",
             "command": "python @file @args",
-            "install": makeInstall("python", "python", "python", "python")
+            "install": makeInstall("python", "python", "python", "python"),
+            "lib": "import lib/clayBindings/clay"
         },
-        "php": {
+        2: {
             "name": "php",
             "extension": ".php",
             "command": "php @file @args",
-            "install": makeInstall("php", "php", "php", "php")
+            "install": makeInstall("php", "php", "php", "php"),
+            "lib": "require_once 'lib/clayBindings/clay.php';"
         },
-        "javascript": {
+        3: {
             "name": "javascript",
             "extension": ".js",
             "command": "node @file @args",
-            "install": makeInstall("node", "nodejs", "node", "nodejs")
+            "install": makeInstall("node", "nodejs", "node", "nodejs"),
+            "lib": "require('lib/clayBindings/clay.js');"
         },
-        "java": {
+        4: {
             "name": "java",
             "extension": ".java",
             "command": "java @file @args",
-            "install": makeInstall("java", "java", "java", "java")
+            "install": makeInstall("java", "java", "java", "java"),
+            "lib": "import lib/clayBindings/clay;"
         },
-        "c": {
+        5: {
             "name": "c",
             "extension": ".c",
             "command": "gcc @file -o @file.out && @file.out @args",
-            "install": makeInstall("gcc", "gcc", "gcc", "gcc")
+            "install": makeInstall("gcc", "gcc", "gcc", "gcc"),
+            "lib": "#include <lib/clayBindings/clay.h>"
         },
-        "c++": {
+        6: {
             "name": "c++",
             "extension": ".cpp",
             "command": "g++ @file -o @file.out && @file.out @args",
-            "install": makeInstall("g++", "g++", "g++", "g++")
+            "install": makeInstall("g++", "g++", "g++", "g++"),
+            "lib": "#include <lib/clayBindings/clay.h>"
         },
-        "c#": {
+        7: {
             "name": "c#",
             "extension": ".cs",
-            "command": "csc @file && @file.exe @args",
-            "install": makeInstall("csc", "csc", "csc", "csc")
+            "command": "csc @file && "+fileRun,
+            "install": makeInstall("csc", "csc", "csc", "csc"),
+            "lib": "using lib/clayBindings/clay;"
         },
-        "go": {
+        7: {
             "name": "go",
             "extension": ".go",
             "command": "go run @file @args",
-            "install": makeInstall("go", "go", "go", "go")
+            "install": makeInstall("go", "go", "go", "go"),
+            "lib": "import lib/clayBindings/clay"
+
         },
-        "ruby": {
+        8: {
             "name": "ruby",
             "extension": ".rb",
             "command": "ruby @file @args",
-            "install": makeInstall("ruby", "ruby", "ruby", "ruby")
+            "install": makeInstall("ruby", "ruby", "ruby", "ruby"),
+            "lib": "require 'lib/clayBindings/clay'"
+
         },
-        "swift": {
+        9: {
             "name": "swift",
             "extension": ".swift",
             "command": "swift @file @args",
-            "install": makeInstall("swift", "swift", "swift", "swift")
+            "install": makeInstall("swift", "swift", "swift", "swift"),
+            "lib": "import lib/clayBindings/clay"
         },
-        "kotlin": {
+        10: {
             "name": "kotlin",
             "extension": ".kt",
             "command": "kotlinc @file -include-runtime -d @file.jar && java -jar @file.jar @args",
-            "install": makeInstall("kotlinc", "kotlin", "kotlin", "kotlin")
+            "install": makeInstall("kotlinc", "kotlin", "kotlin", "kotlin"),
+            "lib": "import lib/clayBindings/clay"
         },
-        "rust": {
+        11: {
             "name": "rust",
             "extension": ".rs",
-            "command": "rustc @file && @file @args",
-            "install": makeInstall("rustc", "rust", "rust", "rust")
+            "command": "rustc @file && "+fileRun,
+            "install": makeInstall("rustc", "rust", "rust", "rust"),
+            "lib": "extern crate lib/clayBindings/clay;"
         },
-        "lua": {
+        12: {
             "name": "lua",
             "extension": ".lua",
             "command": "lua @file @args",
-            "install": makeInstall("lua", "lua", "lua", "lua")
+            "install": makeInstall("lua", "lua", "lua", "lua"),
+            "lib": "require 'lib/clayBindings/clay'"
+        },
+        13: {
+            "name": "perl",
+            "extension": ".pl",
+            "command": "perl @file @args",
+            "install": makeInstall("perl", "perl", "perl", "perl"),
+            "lib": "require 'lib/clayBindings/clay'"
+        },
+        14: {
+            "name": "bash",
+            "extension": ".sh",
+            "command": "bash @file @args",
+            "install": makeInstall("bash", "bash", "bash", "bash"),
+            "lib": "source lib/clayBindings/clay"
+        },
+        15: {
+            "name": "powershell",
+            "extension": ".ps1",
+            "command": "powershell @file @args",
+            "install": makeInstall("powershell", "powershell", "powershell", "powershell"),
+            "lib": "Import-Module lib/clayBindings/clay"
+        },  
+        16: {
+            "name": "haskell",
+            "extension": ".hs",
+            "command": "runhaskell @file @args",
+            "install": makeInstall("runhaskell", "haskell", "haskell", "haskell"),
+            "lib": "import lib/clayBindings/clay"
+        },
+        17: {
+            "name": "elixir",
+            "extension": ".ex",
+            "command": "elixir @file @args",
+            "install": makeInstall("elixir", "elixir", "elixir", "elixir"),
+            "lib": "import lib/clayBindings/clay"
+        },
+        18: {
+            "name": "r",
+            "extension": ".r",
+            "command": "Rscript @file @args",
+            "install": makeInstall("Rscript", "r-base", "r-base", "r-base"),
+            "lib": "source('lib/clayBindings/clay')"
+        },
+        19: {
+            "name": "d",
+            "extension": ".d",
+            "command": "dmd @file && "+fileRun,
+            "install": makeInstall("dmd", "dmd", "dmd", "dmd"),
+            "lib": "import lib/clayBindings/clay"
+        },
+        20: {
+            "name": "dart",
+            "extension": ".dart",
+            "command": "dart @file @args",
+            "install": makeInstall("dart", "dart", "dart", "dart"),
+            "lib": "import 'lib/clayBindings/clay'"
         },
         
 
@@ -173,18 +247,18 @@ def execute(script):
     extension = os.path.splitext(script)[1]
     language = None
     for lang in languages:
-        if lang["extension"] == extension:
-            language = lang
+        if languages[lang]["extension"] == extension:
+            language = languages[lang]
             break
     if language == None:
         print(red("Invalid script extension."))
         return
     # check if the language is installed
-    if utilExists(language["name"]) == False:
+    if not utilExists(language["name"]):
         print("Language not installed. Installing...")
         language["install"]()
     # run the script
-    runCommand(language["command"].replace("@file", script).replace("@args", " ".join(sys.argv[2:])), True)
+    runCommand(language["command"].replace("@file", script).replace("@xfile", script.split(".")[0]).replace("@args", " ".join(sys.argv[2:])), True)
 def utilExists(name):
     return find_executable(name) is not None
 def runCommand(command, isRun = False):
@@ -549,246 +623,12 @@ def install(name, technique):
     if not os.path.exists("dependencies"):
         os.mkdir("dependencies")
     if exists("project.json") == True:
-        if technique == "":
-            technique = input("How would you like to install the package? (npm, git, cargo, gem, pip, go, luaRocks, url): ")
-        if technique == "npm":
-            if utilExists("npm") == False:
-                print("npm is required to install this package. You can install it from https://npmjs.com, We tried to install it for you, but this version of clay doesn't have npm support yet.")
-            if not name:
-                name = input("Package name: ")
-            add(name, "npm")
-            print("Installing "+name+"...")
-            os.system("npm install "+name)
-
-            if exists("package.json") == True:
-                os.remove("package.json")
-            if exists("package-lock.json") == True:
-                os.remove("package-lock.json")
-            if exists("bun.lock") == True:
-                os.remove("bun.lock")
-            if exists("bun.lockb") == True:
-                os.remove("bun.lockb")
-
-            # rather than keeping the items in node_modules, we will keep the items in dependencies and delete the node_modules folder
-            # move the items in node_modules to dependencies
-            os.system("mv node_modules/* dependencies")
-
-            # delete node_modules
-            shutil.rmtree("node_modules")
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("npm:"+name)))
-        elif technique == "git":
-            if utilExists("git") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("git is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install git")
-                    else:
-                        print("git is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("git is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install git")
-                    else:
-                        print("git is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("git is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install git")
-                    else:
-                        print("git is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-
-            if not name:
-                url = input("Git URL: ")
-            add(url, "git")
-            print("Installing "+url+"...")
-            os.system("git clone "+url+" dependencies/"+url.split("/")[-1])
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("git:"+url)))
-        elif technique == "url":
-            if not name:
-                url = input("URL: ")
-            add(url, "url")
-            print("Installing "+url+"...")
-            os.system("curl "+url+" > dependencies/"+url.split("/")[-1])
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("url:"+url)))
-        elif technique == "luaRocks" :
-            if utilExists("luarocks") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("luarocks is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install luarocks")
-                    else:
-                        print("luarocks is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("luarocks is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install luarocks")
-                    else:
-                        print("luarocks is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("luarocks is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install luarocks")
-                    else:
-                        print("luarocks is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-
-            if not name:
-                name = input("Package name: ")
-            add(name, "luaRocks")
-            print("Installing "+name+"...")
-            os.system("luarocks install "+name+" --tree=dependencies/"+name)
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("luaRocks:"+name)))
-        elif technique == "pip":
-            if utilExists("pip") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-
-                        print("pip is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install pip")
-                    else:
-                        print("pip is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-
-                        print("pip is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install pip")
-                    else:
-                        print("pip is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("pip is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install pip")
-                    else:
-                        print("pip is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-        
-            if not name:
-                name = input("Package name: ")
-            add(name, "pip")
-            print("Installing "+name+"...")
-            os.system("pip install "+name+" --target dependencies/"+name)
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("pip:"+name)))
-        elif technique == "gem":
-            if utilExists("gem") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("gem is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install gem")
-                    else:
-                        print("gem is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("gem is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install gem")
-                    else:
-                        print("gem is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("gem is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install gem")
-                    else:
-                        print("gem is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-
-            if not name:
-                name = input("Package name: ")
-            add(name, "gem")
-            print("Installing "+name+"...")
-            os.system("gem install "+name+" --install-dir dependencies/"+name)
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("gem:"+name)))
-        elif technique == "cargo":
-            if utilExists("cargo") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("cargo is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install cargo")
-                    else:
-                        print("cargo is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("cargo is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install rust")
-                    else:
-                        print("cargo is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("cargo is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install cargo")
-                    else:
-                        print("cargo is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-            if not name:
-                name = input("Package name: ")
-            add(name, "cargo")
-            print("Installing "+name+"...")
-            os.system("cargo install "+name+" --root dependencies/"+name)
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("cargo:"+name)))
-        elif technique == "go":
-            if utilExists("go") == False:
-                if sys.platform == "win32":
-                    if utilExists("choco") == True:
-                        print("go is not installed, installing it for you... (this may take a while)")
-                        os.system("choco install go")
-                    else:
-                        print("go is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "darwin":
-                    if utilExists("brew") == True:
-                        print("go is not installed, installing it for you... (this may take a while)")
-                        os.system("brew install go")
-                    else:
-                        print("go is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-                elif sys.platform == "linux":
-                    if utilExists("apt") == True:
-                        print("go is not installed, installing it for you... (this may take a while)")
-                        os.system("apt install go")
-                    else:
-                        print("go is not installed, and clay cannot install it for you. Please install it manually.")
-                        return
-            if not name:
-                name = input("Package name: ")
-            add(name, "go")
-            print("Installing "+name+"...")
-            os.system("go get "+name+" dependencies/"+name)
-
-            #with open('project.json', 'w') as f:
-            #    x = open("project.json", "r")
-            #    f.write(json.dumps(json.load(x).dependencies.append("go:"+name)))
+        # check if package exists
+        if os.path.exists("dependencies/"+name):
+            print("Package "+name+" already exists.")
         else:
-            print("Invalid technique.")
+            # download package
+            print("Installation is not available in this version of clay.")
 
     else:
         print("No project found, try running "+blue("clay new", ['bold'])+" first.")
