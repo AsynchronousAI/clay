@@ -278,10 +278,25 @@ def execute(script):
         return
     # check if the language is installed
     if not utilExists(language["name"]):
-        print("Language not installed. Installing...")
         language["install"]()
     # run the script
+    
+    # duplicate lib to the script directory
+    if os.path.exists("lib") == False:
+        os.mkdir("lib")
+        print(red("Clay is damaged. Please reinstall."))
+    else:
+        shutil.copytree("lib", os.path.dirname(script)+"/lib")
+
+    # make the script start with the lib
+    with open(script, "r") as f:
+        scriptCode = f.read()
+    with open(script, "w") as f:
+        f.write(language["lib"]+"\n"+scriptCode)
+
     runCommand(language["command"].replace("@file", script).replace("@xfile", script.split(".")[0]).replace("@args", " ".join(sys.argv[2:])), True)
+    with open(script, "w") as f:
+        f.write(scriptCode)
 def utilExists(name):
     return find_executable(name) is not None
 def runCommand(command, isRun = False):
@@ -610,11 +625,32 @@ def shell(lang):
         print("Unknown language.")
     
     main()
-def run():
+def run(runscript):
     if exists("project.json") == True: 
         with open('project.json', 'r') as f:
           package = (json.load(f))
           script = package["script"]
+          scripts = package["scripts"]
+        if runscript != "" and runscript != None and runscript != " ":
+            if runscript in scripts:
+                command = scripts[runscript]
+            else:
+                print(red("Script "+runscript+" not found.", ['bold']))
+                main()
+            
+            # if the command doesnt start with %, then run it with os.system
+            if command[0] != "%":
+                os.system(command)
+                return
+            else:
+                # check if the file after the % exists
+                if os.path.exists(command[1:]):
+                    # if it does, run it
+                    execute(command[1:])
+                    return
+                else:
+                    print(red("File "+command[1:]+" not found.", ['bold']))
+                    main()
 
         # if dist folder exists clear it
         if os.path.exists("dist"):
@@ -1007,7 +1043,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == "build":
             massBuild()
         elif sys.argv[1] == "run":
-            run()
+            run(sys.argv[2])
         elif sys.argv[1] == "install":
             install(sys.argv[2], sys.argv[3])
         elif sys.argv[1] == "uninstall":
