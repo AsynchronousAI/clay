@@ -200,7 +200,7 @@ def execute(script):
             "extension": ".lua",
             "command": "lua @file @args",
             "install": makeInstall("lua", "lua", "lua", "lua"),
-            "lib": "require 'lib/clayBindings/clay'"
+            "lib": "clay = require 'lib/clayBindings/clay'"
         },
         13: {
             "name": "perl",
@@ -283,8 +283,8 @@ def execute(script):
     
     # duplicate lib to the script directory
     if os.path.exists("lib") == False:
-        os.mkdir("lib")
         print(red("Clay is damaged. Please reinstall."))
+        return
     else:
         shutil.copytree("lib", os.path.dirname(script)+"/lib")
 
@@ -297,6 +297,7 @@ def execute(script):
     runCommand(language["command"].replace("@file", script).replace("@xfile", script.split(".")[0]).replace("@args", " ".join(sys.argv[2:])), True)
     with open(script, "w") as f:
         f.write(scriptCode)
+    shutil.rmtree(os.path.dirname(script)+"/lib")
 def utilExists(name):
     return find_executable(name) is not None
 def runCommand(command, isRun = False):
