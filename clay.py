@@ -1,4 +1,4 @@
-# author: @AsynchronousAI
+# author: @AsynchronousAI00
 # version: 0.0.1
 # license: MIT
 
@@ -49,6 +49,29 @@ def color(text, color, styles = []):
             style += "8;"
     return "\033["+style+str(color)+"m"+text+"\033[0m"
 # run functions
+def save(key, value):
+    # save the value to the key and make it pernamant
+    
+    # check if the key exists
+    if exists("data.json") == False:
+        # create the file
+        open("data.json", "w+").write("{}")
+    # load the file
+    data = json.loads(open("data.json", "r").read())
+    # add the key and value
+    data[key] = value
+    # save the file
+    open("data.json", "w+").write(json.dumps(data))
+def load(key):
+    # load the value from the key
+    # check if the key exists
+    if exists("data.json") == False:
+        # create the file
+        open("data.json", "w+").write("{}")
+    # load the file
+    data = json.loads(open("data.json", "r").read())
+    # return the value
+    return data[key]
 def mutate(files):
     # take in files which is a list of paths to executable files
     # compile all files into one file
@@ -91,7 +114,7 @@ def execute(script):
             "extension": ".py",
             "command": "python @file @args",
             "install": makeInstall("python", "python", "python", "python"),
-            "lib": "import lib/clayBindings/clay"
+            "lib": "import lib/clayBindings/clay as clay"
         },
         2: {
             "name": "php",
@@ -592,13 +615,6 @@ def run():
         with open('project.json', 'r') as f:
           package = (json.load(f))
           script = package["script"]
-        data = {
-            "requests": ["void"],
-            "data": ["void"],    
-            "return": ["void"]
-        }
-        with open("Runlogs.json", "w") as file:
-            json.dump(data, file)
 
         # if dist folder exists clear it
         if os.path.exists("dist"):
@@ -628,7 +644,107 @@ def install(name, technique):
             print("Package "+name+" already exists.")
         else:
             # download package
-            print("Installation is not available in this version of clay.")
+            techniques = {
+                # %name is the package name, save it to dependencies/, for npm also move all of the items from node_modules to dependencies and delete node_modules
+                "npm": "npm install %name --prefix dependencies && mv dependencies/node_modules/* dependencies && rm -rf dependencies/node_modules",
+                "pip": "pip install %name --target dependencies",
+                "git": "git clone %name dependencies/%name",
+                "zip": "wget %name -O dependencies/%name.zip && unzip dependencies/%name.zip -d dependencies/%name && rm dependencies/%name.zip",
+                "tar": "wget %name -O dependencies/%name.tar && tar -xvf dependencies/%name.tar -C dependencies/%name && rm dependencies/%name.tar",
+                "deb": "wget %name -O dependencies/%name.deb && dpkg -x dependencies/%name.deb dependencies/%name && rm dependencies/%name.deb",
+                "rpm": "wget %name -O dependencies/%name.rpm && rpm2cpio dependencies/%name.rpm | cpio -idmv && rm dependencies/%name.rpm",
+                "apk": "wget %name -O dependencies/%name.apk && apk add --allow-untrusted dependencies/%name.apk && rm dependencies/%name.apk",
+                "exe": "wget %name -O dependencies/%name.exe && wine dependencies/%name.exe && rm dependencies/%name.exe",
+                "msi": "wget %name -O dependencies/%name.msi && wine dependencies/%name.msi && rm dependencies/%name.msi",
+                "dmg": "wget %name -O dependencies/%name.dmg && hdiutil attach dependencies/%name.dmg && rm dependencies/%name.dmg",
+                "pkg": "wget %name -O dependencies/%name.pkg && installer -pkg dependencies/%name.pkg -target / && rm dependencies/%name.pkg",
+                "jar": "wget %name -O dependencies/%name.jar && java -jar dependencies/%name.jar && rm dependencies/%name.jar",
+                "py": "wget %name -O dependencies/%name.py && python dependencies/%name.py && rm dependencies/%name.py",
+                "sh": "wget %name -O dependencies/%name.sh && sh dependencies/%name.sh && rm dependencies/%name.sh",
+                "bat": "wget %name -O dependencies/%name.bat && cmd /c dependencies/%name.bat && rm dependencies/%name.bat",
+                "ps1": "wget %name -O dependencies/%name.ps1 && powershell dependencies/%name.ps1 && rm dependencies/%name.ps1",
+                "luarocks": "luarocks install %name --tree dependencies",
+                "gem": "gem install %name --install-dir dependencies",
+                "cpan": "cpan %name",
+                "pear": "pear install %name",
+                "composer": "composer require %name --working-dir dependencies",
+                "cargo": "cargo install %name --root dependencies",
+                "go": "go get %name",
+                "rust": "rustup install %name",
+                "crystal": "crystal deps install %name",
+                "nimble": "nimble install %name",
+                "nim": "nim c %name",
+                "dub": "dub fetch %name",
+                "d": "dub run %name",
+                "nim": "nim c %name",
+                "nimble": "nimble install %name",
+                "wally": "wally install %name",
+                "yarn": "yarn add %name --prefix dependencies",
+                "apt": "apt install %name",
+                "apt-get": "apt-get install %name",
+                "choco": "choco install %name",
+                "brew": "brew install %name",
+                }
+            installation = {
+                # example: "packageManager": {choco: "command", apt: "command", brew: "command", utilName: "utilName"}, if it doesnt exist in a platform set to "blocked"
+                "npm": {"choco": "npm", "apt": "npm", "brew": "npm", "utilName": "npm"},
+                "pip": {"choco": "pip", "apt": "pip", "brew": "pip", "utilName": "pip"},
+                "git": {"choco": "git", "apt": "git", "brew": "git", "utilName": "git"},
+                "zip": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "unzip"},
+                "tar": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "tar"},
+                "deb": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "dpkg"},
+                "rpm": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "rpm2cpio"},
+                "apk": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "apk"},
+                "exe": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "wine"},
+                "msi": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "wine"},
+                "dmg": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "hdiutil"},
+                "pkg": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "installer"},
+                "jar": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "java"},
+                "py": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "python"},
+                "sh": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "sh"},
+                "bat": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "cmd"},
+                "ps1": {"choco": "wget", "apt": "wget", "brew": "wget", "utilName": "powershell"},
+                "luarocks": {"choco": "luarocks", "apt": "luarocks", "brew": "luarocks", "utilName": "luarocks"},
+                "gem": {"choco": "gem", "apt": "gem", "brew": "gem", "utilName": "gem"},
+                "cpan": {"choco": "cpan", "apt": "cpan", "brew": "cpan", "utilName": "cpan"},
+                "pear": {"choco": "pear", "apt": "pear", "brew": "pear", "utilName": "pear"},
+                "composer": {"choco": "composer", "apt": "composer", "brew": "composer", "utilName": "composer"},
+                "cargo": {"choco": "cargo", "apt": "cargo", "brew": "cargo", "utilName": "cargo"},
+                "go": {"choco": "go", "apt": "go", "brew": "go", "utilName": "go"},
+                "rust": {"choco": "rustup", "apt": "rustup", "brew": "rustup", "utilName": "rustup"},
+                "crystal": {"choco": "crystal", "apt": "crystal", "brew": "crystal", "utilName": "crystal"},
+                "nimble": {"choco": "nimble", "apt": "nimble", "brew": "nimble", "utilName": "nimble"},
+                "nim": {"choco": "nim", "apt": "nim", "brew": "nim", "utilName": "nim"},
+                "dub": {"choco": "dub", "apt": "dub", "brew": "dub", "utilName": "dub"},
+                "d": {"choco": "d", "apt": "d", "brew": "d", "utilName": "d"},
+                "nim": {"choco": "nim", "apt": "nim", "brew": "nim", "utilName": "nim"},
+                "nimble": {"choco": "nimble", "apt": "nimble", "brew": "nimble", "utilName": "nimble"},
+                "wally": {"choco": "wally", "apt": "wally", "brew": "wally", "utilName": "wally"},
+                "yarn": {"choco": "yarn", "apt": "yarn", "brew": "yarn", "utilName": "yarn"},
+                "pipenv": {"choco": "pipenv", "apt": "pipenv", "brew": "pipenv", "utilName": "pipenv"},
+                "poetry": {"choco": "poetry", "apt": "poetry", "brew": "poetry", "utilName": "poetry"},
+                "pipx": {"choco": "pipx", "apt": "pipx", "brew": "pipx", "utilName": "pipx"},
+                "pipenv": {"choco": "pipenv", "apt": "pipenv", "brew": "pipenv", "utilName": "pipenv"}
+            }
+
+            # check if package is in the list
+            if technique in installation and technique in techniques:
+                # check if package is installed
+                if utilExists(installation[technique]["utilName"]):
+                    # install package
+                    print("Installing "+name+"...")
+                    if sys.platform == "win32":
+                        if installation[technique]["choco"] == "blocked":
+                            print(red("This package cannot be installed on Windows."))
+                        os.system("choco install "+installation[technique]["choco"])
+                    elif sys.platform == "linux":
+                        if installation[technique]["apt"] == "blocked":
+                            print(red("This package cannot be installed on Linux."))
+                        os.system("sudo apt install "+installation[technique]["apt"])
+                    elif sys.platform == "darwin":
+                        if installation[technique]["brew"] == "blocked":
+                            print(red("This package cannot be installed on macOS."))
+                        os.system("brew install "+installation[technique]["brew"])
 
     else:
         print("No project found, try running "+blue("clay new", ['bold'])+" first.")
@@ -678,8 +794,72 @@ def clear():
 
 def pref():
     ### CATEGORIES
-    def langConfig():
-        pass
+    def langConfig(lang):
+        if lang == "1":
+            print("JS")
+            lang = "js"
+        elif lang == "2":
+            print("Go")
+            lang = "go"
+        elif lang == "3":
+            print("Zig")
+            lang = "zig"
+        elif lang == "4":
+            print("Moonscript")
+            lang = "moonscript"
+        elif lang == "5":
+            print("Lua")
+            lang = "lua"
+        elif lang == "6":
+            print("Go")
+            lang = "go"
+        elif lang == "7":
+            print("Brainf*ck")
+            lang = "brainfuck"
+        elif lang == "8":
+            print("Go")
+            lang = "go"
+        elif lang == "9":
+            print("Swift")
+            lang = "swift"
+        elif lang == "10":
+            print("Rust")
+            lang = "rust"
+        elif lang == "11":
+            print("Dart")
+            lang = "dart"
+        elif lang == "12":
+            print("Perl")
+            lang = "perl"
+        elif lang == "13":
+            print("Python")
+            lang = "python"
+        elif lang == "14":
+            print("C")
+            lang = "c"
+        elif lang == "15":
+            print("C++")
+            lang = "cpp"
+        elif lang == "16":
+            print("C#")
+            lang = "csharp"
+        elif lang == "17":
+            print("Java")
+            lang = "java"
+        elif lang == "18":
+            print("Kotlin")
+            lang = "kotlin"
+        elif lang == "19":
+            print("Ruby")
+            lang = "ruby"
+        elif lang == "20":
+            print("PHP")
+            lang = "php"
+        else:
+            print("Invalid response.")
+            langConfig(lang)
+        
+
     def compilers():
         print("Select a compiler:")
         print("1. JS")
@@ -693,12 +873,22 @@ def pref():
         print("9. Swift")
         print("10. Rust")
         print("11. Dart")
-        print(red("\n12. Exit"))
+        print("12. Perl")
+        print("13. Python")
+        print("14. C")
+        print("15. C++")
+        print("16. C#")
+        print("17. Java")
+        print("18. Kotlin")
+        print("19. Ruby")
+        print("20. PHP")
+        
+        print(red("\n21. Exit"))
         option = input("")
-        if int(option) <= 11:
+        if int(option) <= 20:
             langConfig(option)
-        elif option == "12":
-            main()
+        elif option == "21":
+            pref()
         else:
             print(red("Invalid response.", ["bold"]))
             compilers()
@@ -717,6 +907,7 @@ def pref():
         print("You currently arent logged in. Would you like to login (y/n)")
         u = input("Username: ")
         p = input("Password:")
+        
     elif option == "4":
         main()
     else:
